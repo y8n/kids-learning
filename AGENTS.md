@@ -45,11 +45,33 @@
 ### 命令
 
 ```bash
-npm run ios:shot                 # 竖屏 + 横屏（真实 iPadOS Safari）
-npm run ios:shot -- --current    # 只截当前画面（截 PWA 用这个）
+npm run ios:shot                 # Safari：打开线上地址，竖屏 + 横屏
+npm run ios:shot -- --current    # PWA：不打开网页，截当前前台应用，竖屏 + 横屏
 ```
 
-产物在 `shots/`（已 gitignore），脚本结尾会打印每张的像素尺寸。
+产物在 `shots/`（已 gitignore），脚本结尾会打印每张的像素尺寸：
+
+| 模式        | 产物                                               |
+| ----------- | -------------------------------------------------- |
+| 默认        | `ipad-portrait.png` / `ipad-landscape.png`         |
+| `--current` | `ipad-pwa-portrait.png` / `ipad-pwa-landscape.png` |
+
+### ⚠️ PWA 截图需要用户点一下图标
+
+**这是目前唯一没法自动化的环节。** 试过并且**全部失败**的路子：
+
+| 尝试                                               | 结果                             |
+| -------------------------------------------------- | -------------------------------- |
+| `simctl launch com.apple.webapp`                   | 进程起来，但不显示内容           |
+| `simctl launch com.apple.WebKit.PushBundle.<uuid>` | `FBSOpenApplicationServiceError` |
+| 重启模拟器指望它恢复前台                           | 回到主屏，不会恢复               |
+| `⌘空格` 唤起 iOS Spotlight 再搜索                  | 模拟器不透传这个快捷键           |
+| 取 DeviceHub 窗口坐标后模拟点击                    | System Events 报窗口数为 0       |
+
+**所以流程是**：让用户在主屏点一下图标（Dock 里那个**金色星星**）→ 再跑 `npm run ios:shot -- --current`。
+
+> 💡 只要不跑默认模式（那个会打开 Safari 把它顶掉），**PWA 会一直留在前台**，
+> 之后可以反复 `--current` 截图。
 
 ### 为什么是这个命令
 

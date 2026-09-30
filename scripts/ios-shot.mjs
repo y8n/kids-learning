@@ -223,20 +223,18 @@ async function main() {
 
   await boot(simctl, udid)
 
-  /* --current：不打开网页、不旋转，只把当前画面截下来。PWA 只能这样截。 */
+  /* --current：不打开网页，截「当前正在跑的那个 App」。
+     PWA 只能用这个模式 —— 它的图标是 SpringBoard 拉起的，simctl 起不来。 */
   if (onlyCurrent) {
-    const o = await currentOrientation(simctl, udid)
-    rmSync(PROBE, { force: true })
-    const file = join(SHOT_DIR, `ipad-pwa-${o}.png`)
-    await capture(simctl, udid, file)
-    report([file])
-    console.log('\n--current 只截当前画面：不打开网页、不旋转。')
-    return
+    console.log('PWA 模式：不打开任何网页，直接截当前前台画面')
+    console.log('（没看到应用的话，先在模拟器主屏点一下那个金色星星图标）\n')
+  } else {
+    run(simctl, ['openurl', udid, url])
+    console.log('已用 Safari 打开，等待渲染…')
+    await sleep(10000)
   }
 
-  run(simctl, ['openurl', udid, url])
-  console.log('已用 Safari 打开，等待渲染…')
-  await sleep(10000)
+  const prefix = onlyCurrent ? 'ipad-pwa' : 'ipad'
 
   /* 先归一化到竖屏，让后面的步骤是确定的（模拟器可能记住上次的方向） */
   const normalized = await rotateTo(simctl, udid, 'portrait')
@@ -247,7 +245,7 @@ async function main() {
     process.exit(1)
   }
 
-  const portraitFile = join(SHOT_DIR, 'ipad-portrait.png')
+  const portraitFile = join(SHOT_DIR, `${prefix}-portrait.png`)
   await capture(simctl, udid, portraitFile)
 
   const landscape = await rotateTo(simctl, udid, 'landscape')
@@ -257,7 +255,7 @@ async function main() {
     process.exit(1)
   }
 
-  const landscapeFile = join(SHOT_DIR, 'ipad-landscape.png')
+  const landscapeFile = join(SHOT_DIR, `${prefix}-landscape.png`)
   await capture(simctl, udid, landscapeFile)
 
   rmSync(PROBE, { force: true })
