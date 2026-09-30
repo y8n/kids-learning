@@ -26,6 +26,8 @@
 **主设备：11 寸 iPad Air 横屏全屏 = 1180×820 pt**
 
 - 这个尺寸必须与设计稿 **1:1**，是回归基线；改动布局后要按这个尺寸截图核对
+- 核对手段：`npm run ios:shot` 出 iPad 横竖屏截图（真实 iPadOS Safari），
+  比无头 Chrome 可信；无头 Chrome 只用来快速迭代
 - 触屏优先：可点区域 ≥ 44px，不要依赖 hover
 - 次要形态（竖屏 / 手机 / Safari 有工具栏时）只需**可用**，不要求最优
 
@@ -118,6 +120,9 @@ git push origin main --follow-tags
 ## 必须遵守的规范
 
 **提交信息**：Conventional Commits —— `feat|fix|refactor|docs|chore|perf(scope): 说明`
+
+**截图核对**：`npm run ios:shot`（iPad 模拟器，横屏 + 竖屏）。
+模拟器只能验布局，**验不了触摸、性能、系统版本差异**，上线前仍要真机点一遍。
 
 **提交前必须全绿**：
 

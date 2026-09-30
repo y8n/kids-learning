@@ -25,3 +25,6 @@ build/
 # 编辑器缓存
 .eslintcache
 .vite/
+
+# iPad 模拟器截图产物
+shots/

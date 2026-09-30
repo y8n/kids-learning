@@ -33,7 +33,27 @@ npm run build        # 类型检查 + 构建到 build/
 npm run preview      # 预览构建产物
 npm run lint         # ESLint（CI 会跑，0 warning 才通过）
 npm run format       # Prettier 格式化
+npm run ios:shot     # iPad 模拟器截图（横屏 + 竖屏）
 ```
+
+### iPad 模拟器截图
+
+要验证「真机 Safari 到底渲染成什么样」时用它 —— 比无头 Chrome 可信，因为跑的是真正的 iPadOS Safari。
+
+```bash
+npm run ios:shot                                   # 截线上地址
+npm run ios:shot -- --url http://127.0.0.1:5180/   # 截本地 dev
+```
+
+产物写到 `shots/`（已 gitignore）：`ipad-landscape.png` + `ipad-portrait.png`。
+
+**首次使用需要开一次权限**：脚本靠 AppleScript 发 ⌘← 来旋转设备，
+系统的「辅助功能」权限没开的话转不动，这时它会打印开通步骤
+（系统设置 → 隐私与安全性 → 辅助功能 → 加上你的终端）。开完一劳永逸。
+
+> 两个 Xcode 27 的坑：`Simulator.app` 已改名 `DeviceHub.app`，
+> 且它在 `Xcode.app/Contents/Applications/` 下；`xcode-select` 若指向
+> CommandLineTools，`xcrun simctl` 会失败 —— 脚本里已按绝对路径兜底。
 
 ---
 
