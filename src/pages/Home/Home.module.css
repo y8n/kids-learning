@@ -131,7 +131,7 @@
     /* Tier B 的内容宽度基准：.subjects 和 .rail **共用同一个值**。
        曾经只有 .subjects 写了 max-width:620px，.rail 没写，
        结果下方两张面板比上面 2×2 卡片宽出一截、左右都不齐。 */
-    --tierb-content-w: 620px;
+    --tierb-content-w: 680px;
     height: auto;
     min-height: 100vh;
     min-height: 100svh; /* svh 不随移动端地址栏伸缩，避免布局跳动 */
@@ -155,7 +155,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: none;
     gap: clamp(10px, 3vw, 18px);
-    /* 限宽：iPad 竖屏下不限的话每张卡会撑到 370×410，一屏只看得下 4 张卡 */
+    /* 限宽：不限的话 iPad 竖屏每张卡会撑到 370×410，一屏只看得下 4 张卡。
+       680 是「两侧留白再收 30%」的结果：
+       留白 = app padding 24 + 居中 auto (820-48-680)/2=46 → 70px（原 100px）。
+       手机（390 宽）内容区只有 ~359px，够不到 680，所以不受影响。 */
     width: 100%;
     max-width: var(--tierb-content-w);
     margin-inline: auto;
