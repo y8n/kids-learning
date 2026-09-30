@@ -27,6 +27,9 @@ const subjects: Subject[] = [
     characterUrl: peppaUrl,
     theme: { from: '#FF8FB6', to: '#FF3D7F' },
     enabled: true,
+    // 佩奇本身接近正方（202×201），而且头顶皇冠、身体铺得开，
+    // 在卡片里显得比另外三个角色「满」，收 10% 让它和其它角色重量相当。
+    artScale: 0.9,
     progress: progressOf('english'),
   },
   {

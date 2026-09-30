@@ -102,7 +102,9 @@
 /* ── 右：日期 + 个人中心 ── */
 .date {
   padding: 0.45em clamp(12px, min(1.9vw, 2.7vh), 22px);
-  border-radius: var(--r-lg);
+  /* 与 .me / .mine 统一为胶囊。
+     设计稿里这里是 20px（--r-lg），三块圆角各不相同，视觉上「日期」明显更方。 */
+  border-radius: var(--r-pill);
   background: rgba(0, 0, 0, 0.26);
   backdrop-filter: blur(10px);
   text-align: center;
