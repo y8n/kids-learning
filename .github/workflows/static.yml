@@ -7,6 +7,29 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ['main']
+    # 只改这些文件时不跑部署。
+    #
+    # 为什么要在意：CI 跑一次就会产出新的 BUILD_TIME（来自 run_started_at），
+    # 前台挂着的 PWA 检测到「有新版本」会自己 reload ——
+    # 只改了 README 却让小孩 iPad 上的应用刷一下，是没必要的干扰。
+    #
+    # ⚠️ 只有**整次推送全是**这些文件时才跳过；
+    #    混了 src/ 之类的改动照样会跑（这正是想要的）。
+    # ⚠️ 不要往里加 .github/** —— 改了 workflow 本身必须跑一次来验证它。
+    paths-ignore:
+      # 文档：不参与构建
+      - '**.md' # AGENTS.md / README.md / CHANGELOG.md
+      - 'LICENSE'
+      # 本地开发 / 编辑器配置：CI 只跑 typecheck + lint + build，都不读这些
+      # （CI 不跑 prettier，所以 .prettierrc / .prettierignore / .editorconfig 可忽略）
+      - '.editorconfig'
+      - '.prettierrc.json'
+      - '.prettierignore'
+      - '.gitignore'
+      - '.vscode/**'
+      - '.idea/**'
+      # 归档的原始立绘：src 里没有任何引用，不进构建产物
+      - 'assets/characters-source/**'
   workflow_dispatch:
 
 permissions:

@@ -23,6 +23,24 @@
 - CI 在 Runner 上 `npm ci && typecheck && lint && build`，见 `.github/workflows/static.yml`
 - `build/` 已在 `.gitignore` 里，**不要加回版本控制**
 
+**CI 的触发范围（`paths-ignore`）**
+
+只改文档 / 编辑器配置 / 归档素材时**不跑部署** —— 原因不只是省 CI 时间：
+**每跑一次就会产出新的 `BUILD_TIME`，前台挂着的 PWA 会因此自动 reload**。
+只改个 README 就让小孩 iPad 上的应用刷一下，是没必要的干扰。
+
+已忽略：`**.md`、`LICENSE`、`.editorconfig`、`.prettierrc.json`、`.prettierignore`、
+`.gitignore`、`.vscode/**`、`.idea/**`、`assets/characters-source/**`
+
+> ⚠️ **两条容易改错**：
+>
+> 1. **别加 `.github/**`** —— 改 workflow 本身必须跑一次来验证它
+> 2. **`.prettierrc*` / `.editorconfig` 可以忽略**，因为 CI 不跑 prettier；
+>    但 **`.nvmrc` / `eslint.config.js` / `tsconfig.json` 不能忽略** ——
+>    它们分别决定 Node 版本、lint 规则、类型检查，都在 CI 链路里
+
+- 只有**整次推送全是**被忽略的文件时才跳过；混了 `src/` 的改动照跑
+
 **主设备：11 寸 iPad Air 横屏全屏 = 1180×820 pt**
 
 - 这个尺寸必须与设计稿 **1:1**，是回归基线；改动布局后要按下面的流程截图核对
