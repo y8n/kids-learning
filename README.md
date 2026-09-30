@@ -36,6 +36,21 @@ npm run format       # Prettier 格式化
 npm run ios:shot     # iPad 模拟器截图（横屏 + 竖屏）
 ```
 
+### 开发流程：提交与推送分开
+
+**默认只提交，不推送。** 推送到 `main` 会触发 Pages 部署，那是发布动作 ——
+等明确指令再做。
+
+日常看效果走本地 dev server，快得多：
+
+```bash
+npm run dev                     # 常驻
+npm run ios:shot -- --dev       # 模拟器 Safari 打开 localhost 截图
+```
+
+模拟器没有独立网络栈，`localhost` 就是 Mac 的 localhost，配上 Vite HMR
+改完即时生效。**截图细节见 `AGENTS.md`。**
+
 ### 版本自动刷新
 
 「添加到主屏幕」的 PWA 会一直挂在前台不发请求，改完代码也看不到新版。

@@ -2,11 +2,19 @@
 /**
  * iPad 模拟器截图
  *
- *   npm run ios:shot                                   # Safari：竖屏 + 横屏
- *   npm run ios:shot -- --url http://127.0.0.1:5180/   # 截本地 dev
- *   npm run ios:shot -- --current                      # 只截当前画面（PWA 用这个）
+ *   npm run ios:shot -- --dev                          # 【日常开发】localhost dev server
+ *   npm run ios:shot                                   # 线上地址（Safari）
+ *   npm run ios:shot -- --current                      # 当前前台应用（PWA 验收用这个）
+ *   npm run ios:shot -- --url http://x/                # 任意地址
  *
  * 产物写到 shots/（已 gitignore），并在结尾打印每张的像素尺寸。
+ *
+ * ── 用哪个模式 ──
+ *   日常改样式 → `--dev`。iOS 模拟器没有独立网络栈、直接用 Mac 的，
+ *                所以模拟器里的 localhost 就是 Mac 的 localhost，
+ *                配上 Vite HMR 改完即时生效，不用部署。
+ *   验收最终效果 → `--current`。看的是真 PWA 全屏（Web Clip 的 URL 写死，
+ *                没法指向 localhost，所以只能走线上）。
  *
  * ════════════════════════════════════════════════════════════════
  * 为什么脚本长这样 —— 三个踩过的坑
@@ -31,11 +39,13 @@
  *    而倒竖屏和正常竖屏的像素尺寸一样，脚本分辨不出来（极少见）。
  *    真遇到的话，看截图能一眼发现（整屏是倒的），手动转正再跑一次即可。
  */
-import { execFileSync, spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, rmSync } from 'node:fs'
+import { execFileSync, spawn, spawnSync } from 'node:child_process'
+import { existsSync, mkdirSync, openSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 
 const DEFAULT_URL = 'https://y8n.github.io/kids-learning/'
+const DEV_URL = 'http://localhost:5180/'
+const DEV_LOG = '/tmp/kids-learning-dev.log'
 const DEVICE_NAME = 'iPad Air 11-inch (M4)'
 const SHOT_DIR = 'shots'
 const PROBE = join(SHOT_DIR, '.probe.png')
@@ -57,6 +67,46 @@ function findSimctl() {
   } catch {
     return null
   }
+}
+
+/* ── dev server ─────────────────────────────────────────── */
+
+async function reachable(url) {
+  try {
+    const ctrl = new AbortController()
+    const t = setTimeout(() => ctrl.abort(), 2500)
+    const res = await fetch(url, { signal: ctrl.signal })
+    clearTimeout(t)
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
+/** 开发模式：dev server 没跑就顺手拉起来，保持常驻，省得每次手动开 */
+async function ensureDevServer() {
+  if (await reachable(DEV_URL)) {
+    console.log('dev server 已在运行，直接复用')
+    return true
+  }
+
+  console.log('dev server 没在跑，正在启动…')
+  const child = spawn('npm', ['run', 'dev'], {
+    cwd: process.cwd(),
+    detached: true,
+    stdio: ['ignore', openSync(DEV_LOG, 'a'), openSync(DEV_LOG, 'a')],
+  })
+  child.unref()
+
+  for (let i = 0; i < 30; i++) {
+    await sleep(1000)
+    if (await reachable(DEV_URL)) {
+      console.log(`dev server 就绪（日志：${DEV_LOG}）`)
+      return true
+    }
+  }
+  console.error(`✗ dev server 起不来，看日志：${DEV_LOG}`)
+  return false
 }
 
 /* ── 设备 ───────────────────────────────────────────────── */
@@ -204,9 +254,12 @@ function permissionHint() {
 
 async function main() {
   const argv = process.argv.slice(2)
+  const dev = argv.includes('--dev')
   const urlIdx = argv.indexOf('--url')
-  const url = urlIdx >= 0 ? argv[urlIdx + 1] : DEFAULT_URL
+  const url = urlIdx >= 0 ? argv[urlIdx + 1] : dev ? DEV_URL : DEFAULT_URL
   const onlyCurrent = argv.includes('--current')
+
+  if (dev && !(await ensureDevServer())) process.exit(1)
 
   const simctl = findSimctl()
   if (!simctl) {
@@ -236,30 +289,45 @@ async function main() {
 
   const prefix = onlyCurrent ? 'ipad-pwa' : 'ipad'
 
-  /* 先归一化到竖屏，让后面的步骤是确定的（模拟器可能记住上次的方向） */
-  const normalized = await rotateTo(simctl, udid, 'portrait')
-  if (!normalized.ok) {
-    console.log(`\n⚠️  无法自动旋转（原因：${normalized.reason}）`)
-    if (normalized.reason === 'no-permission') permissionHint()
-    else console.log('   手动在模拟器窗口转好方向后，用 --current 截图。')
-    process.exit(1)
+  /* ── 先截「当前方向」。这一步不依赖任何旋转，永远能成。 ──
+     旋转是**可选增强**：它靠 AppleScript 发 ⌘← / ⌘→，需要模拟器窗口开着
+     且有「辅助功能」权限。任何一环不到位都不该让整次截图失败。 */
+  const first = await currentOrientation(simctl, udid)
+  const firstFile = join(SHOT_DIR, `${prefix}-${first}.png`)
+  await capture(simctl, udid, firstFile)
+  const files = [firstFile]
+  console.log(`✓ ${firstFile}  (${first})`)
+
+  if (argv.includes('--single')) {
+    rmSync(PROBE, { force: true })
+    report(files)
+    return
   }
 
-  const portraitFile = join(SHOT_DIR, `${prefix}-portrait.png`)
-  await capture(simctl, udid, portraitFile)
+  /* ── 再试另一个方向 ── */
+  const second = first === 'landscape' ? 'portrait' : 'landscape'
+  const rot = await rotateTo(simctl, udid, second)
 
-  const landscape = await rotateTo(simctl, udid, 'landscape')
-  if (!landscape.ok) {
-    console.log(`\n⚠️  转横屏失败（原因：${landscape.reason}）`)
-    report([portraitFile])
-    process.exit(1)
+  if (rot.ok) {
+    const secondFile = join(SHOT_DIR, `${prefix}-${second}.png`)
+    await capture(simctl, udid, secondFile)
+    files.push(secondFile)
+    console.log(`✓ ${secondFile}  (${second})`)
+  } else {
+    rmSync(PROBE, { force: true })
+    report(files)
+    console.log(`\n⚠️  只交了这一张 —— 转不到 ${second}（原因：${rot.reason}）`)
+    if (rot.reason === 'no-permission') permissionHint()
+    else {
+      console.log('\n  旋转需要**模拟器窗口开着**（DeviceHub 有可见窗口时 ⌘← / ⌘→ 才有效）。')
+      console.log('  打开窗口后在设备里按 ⌘← / ⌘→ 转好方向，再跑一次本命令即可。')
+      console.log('  —— 或者就用当前方向这张，开发时通常够看。')
+    }
+    return
   }
-
-  const landscapeFile = join(SHOT_DIR, `${prefix}-landscape.png`)
-  await capture(simctl, udid, landscapeFile)
 
   rmSync(PROBE, { force: true })
-  report([landscapeFile, portraitFile])
+  report(files)
 }
 
 main().catch((err) => {

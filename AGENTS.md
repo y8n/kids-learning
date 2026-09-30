@@ -37,6 +37,48 @@
 
 ---
 
+## 开发流程（重要）
+
+### 🚫 默认只提交，不推送
+
+**没有明确说「推送」「部署」时，不要 `git push`。提交和推送是两件事。**
+
+改完之后：
+
+```bash
+npm run typecheck && npm run lint && npm run format:check && npm run build   # 全绿
+git commit -m "..."                                                          # 提交
+# 停在这里。不要顺手 push。
+```
+
+> 推送到 `main` 会立刻触发 Pages 部署。「提交」是记录进度，「推送」是发布动作 ——
+> 开发过程中不需要每改一次就发布一次。**等明确指令再推。**
+
+### 日常看效果：Safari + 本地 dev server（默认手段）
+
+```bash
+npm run dev                     # 常驻后台，别关（除非遇到阻塞问题）
+npm run ios:shot -- --dev       # 模拟器 Safari 打开 localhost 并截图
+```
+
+- iOS 模拟器没有独立网络栈，`localhost` 就是 **Mac 的** → 直连本地 dev server
+- 配 Vite HMR，**改完即时生效，不用提交、不用部署**
+- 出来的是 Safari 截图（有工具栏、非全屏）—— 开发阶段**够用就行，不要为此纠结**
+
+### 验收：推送 + PWA 截图（按需触发）
+
+用户明确要求推送 / 部署验证时才做：
+
+```bash
+git push origin main             # 触发 CI，约 1 分钟
+# 等 CI 绿 + 等 PWA 自动刷新（≤30s，见下文「版本自检」）
+npm run ios:shot -- --current    # 截 PWA 全屏
+```
+
+**PWA 截图才是最终形态**（无工具栏、可用高度 820pt）。
+
+---
+
 ## 截图对比（重要）
 
 **只要用户说「截图对比」「看看效果」「发个截图」，一律用 iPad 模拟器出图，
