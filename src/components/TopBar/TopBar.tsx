@@ -70,8 +70,11 @@ export function TopBar({ profile, loading, error, onRetryProfile, onOpenProfile 
         <span>{greeting}</span>
       </div>
 
-      <button type="button" className={styles.mine} onClick={onOpenProfile}>
-        <span aria-hidden="true">👤</span> 个人中心
+      <button type="button" className={styles.mine} onClick={onOpenProfile} aria-label="个人中心">
+        <span className={styles.mineIcon} aria-hidden="true">
+          👤
+        </span>
+        <span className={styles.mineLabel}>个人中心</span>
       </button>
     </header>
   )

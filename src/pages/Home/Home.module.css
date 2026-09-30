@@ -128,6 +128,10 @@
    ════════════════════════════════════════════════════════════════ */
 @media (max-width: 899px), (orientation: portrait) {
   .app {
+    /* Tier B 的内容宽度基准：.subjects 和 .rail **共用同一个值**。
+       曾经只有 .subjects 写了 max-width:620px，.rail 没写，
+       结果下方两张面板比上面 2×2 卡片宽出一截、左右都不齐。 */
+    --tierb-content-w: 620px;
     height: auto;
     min-height: 100vh;
     min-height: 100svh; /* svh 不随移动端地址栏伸缩，避免布局跳动 */
@@ -153,7 +157,7 @@
     gap: clamp(10px, 3vw, 18px);
     /* 限宽：iPad 竖屏下不限的话每张卡会撑到 370×410，一屏只看得下 4 张卡 */
     width: 100%;
-    max-width: 620px;
+    max-width: var(--tierb-content-w);
     margin-inline: auto;
   }
 
@@ -162,9 +166,13 @@
     aspect-ratio: 9 / 10;
   }
 
+  /* 与上面的 .subjects 同宽同起点，否则下方两张面板会比卡片宽、左右不齐 */
   .rail {
     grid-template-rows: none;
     gap: clamp(12px, 3vw, 18px);
+    width: 100%;
+    max-width: var(--tierb-content-w);
+    margin-inline: auto;
   }
 }
 
