@@ -73,6 +73,29 @@ npm run ios:shot -- --current    # PWA：不打开网页，截当前前台应用
 > 💡 只要不跑默认模式（那个会打开 Safari 把它顶掉），**PWA 会一直留在前台**，
 > 之后可以反复 `--current` 截图。
 
+### 模拟器能直接访问 Mac 上的 localhost（迭代神器）
+
+**iOS 模拟器没有独立网络栈，直接用 Mac 的。** 所以模拟器里的 `localhost`
+就是 **Mac 的 localhost** —— 实测 `simctl openurl booted http://localhost:5180/`
+能打开 Mac 上跑的 Vite dev server。
+
+```bash
+npm run dev                                          # Mac 上起 dev server
+npm run ios:shot -- --url http://localhost:5180/     # 模拟器 Safari 打开它
+```
+
+配合 Vite 的 HMR，**改代码后模拟器里即时生效，完全不用部署**。
+调样式时优先用这条，比「推送→等 CI→等自动刷新」快一个数量级。
+
+> ⚠️ 三点差别：
+>
+> 1. **真机不行** —— 真机上 `localhost` 指 iPad 自己。真机要用 Mac 的局域网 IP
+>    （`ipconfig getifaddr en0`），且 dev server 得监听 `0.0.0.0`（`--host`）。
+> 2. **PWA 用不了这条** —— Web Clip 的 URL 是添加时写死的，改不了。
+>    所以要验 PWA 效果还是得走线上地址。
+> 3. **dev 和 build 的 base 不同** —— dev 是 `/`，build 是 `/kids-learning/`。
+>    访问 dev server 用 `http://localhost:5180/`，访问本地 build 产物要带子路径。
+
 ### 改了代码怎么让 PWA 刷到新版
 
 **PWA 挂在前台时不会自己发请求**，所以永远停在打开时那个版本。
