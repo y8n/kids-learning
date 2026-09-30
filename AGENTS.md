@@ -87,9 +87,14 @@ npm run ios:shot -- --current    # 截 PWA 全屏
 ### 命令
 
 ```bash
-npm run ios:shot                 # Safari：打开线上地址，竖屏 + 横屏
-npm run ios:shot -- --current    # PWA：不打开网页，截当前前台应用，竖屏 + 横屏
+npm run ios:shot -- --dev        # 【日常】本地 dev server + Safari
+npm run ios:shot -- --current    # 【验收】PWA：截当前前台应用
+npm run ios:shot                 # 线上地址 + Safari
+npm run ios:shot -- --single     # 只截当前方向（不尝试旋转）
 ```
+
+旋转是**可选增强**：脚本先截当前方向（不依赖旋转、永远能成），
+再尝试转另一个方向；转不动就只交一张并说明原因。
 
 产物在 `shots/`（已 gitignore），脚本结尾会打印每张的像素尺寸：
 
@@ -230,10 +235,10 @@ AI **不得**因为下面任何一条理由，去 bump `package.json` 的 `versi
 - 「这次重构动了很多文件」
 
 **没收到明确的发版指令（如「发个版本」「升到 0.2.0」）时，一律：**
-改动照常 `commit` + `push` 到 `main`，**`version` 保持不变，不写 CHANGELOG，不打 tag。**
+改动照常 `commit`（要不要 `push` 见前面「开发流程」—— 默认不推），
+**`version` 保持不变，不写 CHANGELOG，不打 tag。**
 
-> 推送到 `main` 就会自动部署 —— **「只修不发版」是完全支持的常规操作**，
-> 不要把它当成需要补版本号的理由。版本号是产品决策，不是提交的收尾动作。
+> 版本号是产品决策，不是提交的收尾动作。
 
 > 📌 这条规则是有代价换来的：0.1.0 之后曾在未获指令的情况下自行发布了 0.1.1、0.1.2，
 > 两个 tag 最终都被撤销、版本号退回 0.1.0。**不要再犯。**
@@ -298,7 +303,8 @@ git push origin main --follow-tags
 
 **提交信息**：Conventional Commits —— `feat|fix|refactor|docs|chore|perf(scope): 说明`
 
-**截图核对**：`npm run ios:shot`（iPad 模拟器，横屏 + 竖屏）。
+**截图核对**：日常用 `npm run ios:shot -- --dev`（本地 dev server + Safari），
+验收用 `npm run ios:shot -- --current`（PWA 全屏）。详见上面「开发流程」。
 模拟器只能验布局，**验不了触摸、性能、系统版本差异**，上线前仍要真机点一遍。
 
 **提交前必须全绿**：
