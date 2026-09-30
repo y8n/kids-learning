@@ -158,7 +158,7 @@ push main  →  checkout  →  npm ci  →  typecheck  →  lint  →  build  �
     │   ├── SubjectCard/           学科卡片
     │   ├── Panel/                 右栏卡片外壳（含错误态）
     │   ├── TodayPanel/            今日学习
-    │   ├── WeeklyPanel/           最近一周
+    │   ├── WeeklyPanel/           本周（自然周）
     │   └── ErrorBoundary/         应用级错误边界
     ├── constants/ui.ts            魔法数字与固定文案
     ├── hooks/useRequest.ts        请求三态
@@ -173,12 +173,12 @@ push main  →  checkout  →  npm ci  →  typecheck  →  lint  →  build  �
 
 ### 现有接口
 
-| 方法 | 路径               | 说明         | 返回类型        |
-| ---- | ------------------ | ------------ | --------------- |
-| GET  | `/profile`         | 孩子档案     | `ChildProfile`  |
-| GET  | `/subjects`        | 四张学科卡片 | `Subject[]`     |
-| GET  | `/progress/today`  | 今日学习总览 | `TodayProgress` |
-| GET  | `/progress/weekly` | 最近一周记录 | `WeeklyRecord`  |
+| 方法 | 路径               | 说明                  | 返回类型        |
+| ---- | ------------------ | --------------------- | --------------- |
+| GET  | `/profile`         | 孩子档案              | `ChildProfile`  |
+| GET  | `/subjects`        | 四张学科卡片          | `Subject[]`     |
+| GET  | `/progress/today`  | 今日学习总览          | `TodayProgress` |
+| GET  | `/progress/weekly` | 本周记录（周一→周日） | `WeeklyRecord`  |
 
 ### Mock 模拟的不只是数据
 

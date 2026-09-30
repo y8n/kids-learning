@@ -6,7 +6,7 @@ export function fetchTodayProgress(signal?: AbortSignal): Promise<TodayProgress>
   return request<TodayProgress>({ url: '/progress/today', signal })
 }
 
-/** 最近一周学习记录（右侧下方卡片） */
+/** 本周学习记录 —— 自然周，周一 → 周日（右侧下方卡片） */
 export function fetchWeeklyRecord(signal?: AbortSignal): Promise<WeeklyRecord> {
   return request<WeeklyRecord>({ url: '/progress/weekly', signal })
 }

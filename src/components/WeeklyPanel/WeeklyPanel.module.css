@@ -23,10 +23,8 @@
 
 .cell {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
   height: clamp(40px, min(16.766cqw, 6.829vh), 62px); /* 56px */
   border-radius: var(--r-md);
   background: rgba(255, 255, 255, 0.16);
@@ -43,17 +41,48 @@
   border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
-.cell em {
-  font-size: clamp(10px, 4.191cqw, 16px); /* 14px */
-  font-style: normal;
+/* ── 星星：只画数量、不写数字 ────────────────────────────────
+   1 颗 = 原样；2 颗 = 小一号并排；3 颗 = 上二下一。
+   用 grid 而不是 flex，是因为「上二下一」的第 3 颗要跨两列自动居中，
+   而单颗又得待在格子正中 —— flex 得靠写死宽度才做得到。 */
+.stars {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(0.5px, 0.298cqw, 1.5px) clamp(1px, 0.595cqw, 2.5px); /* 1px 行距 / 2px 列距 */
   line-height: 1;
 }
 
-.cell b {
-  font-size: clamp(10px, 3.743cqw, 14px); /* 12.5px */
-  font-weight: 900;
-  color: var(--gold-ink);
+/* 要两列才排得下的两种情况，顺带小一号（两颗挤在一个格子里） */
+.stars[data-count='2'],
+.stars[data-count='3'] {
+  grid-template-columns: repeat(2, auto);
+  font-size: clamp(8.5px, 3.593cqw, 13.5px); /* 12px */
+}
+
+/* 第 3 颗单独占一行、跨满两列 → 居中挂在「上二」下方 */
+.stars[data-count='3'] > :last-child {
+  grid-column: 1 / -1;
+}
+
+/* 正好 1 颗：尺寸与原来一致 */
+.stars[data-count='1'] {
+  font-size: clamp(10px, 4.191cqw, 16px); /* 14px */
+}
+
+.star {
+  font-style: normal;
+}
+
+/* 0 颗：只留线框，不填充。比实心星大一号 ——
+   文本字形 ☆ 自带边距，同字号看着会明显比 emoji ⭐ 小；
+   透明度也不能再低了，淡紫底上 0.55 已经快看不见 */
+.emptyStar {
+  font-size: clamp(11px, 4.762cqw, 18px); /* 16px */
+  font-style: normal;
   line-height: 1;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .skel {

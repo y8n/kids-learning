@@ -74,7 +74,11 @@ export interface WeekDayRecord {
   isToday: boolean
 }
 
-/** 最近一周学习记录（右侧下方卡片） */
+/**
+ * 本周学习记录（右侧下方卡片）。
+ * `days` 是**自然周**：固定 7 项、周一 → 周日，不是「最近 7 天」。
+ * 还没到的日子星星数是 0。
+ */
 export interface WeeklyRecord {
   days: WeekDayRecord[]
   /** 连续打卡天数 */
