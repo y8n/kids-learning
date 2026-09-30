@@ -1,11 +1,17 @@
+/* ════════════════════════════════════════════════════════════════
+   面板外壳（右栏两张横卡共用）
+   内部尺寸用 cqw，基准：设计稿面板宽 380px
+   ════════════════════════════════════════════════════════════════ */
+
 .panel {
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: clamp(16px, 1.9vw, 22px) clamp(16px, 2vw, 24px);
-  border-radius: var(--r-panel);
+  container-type: inline-size;
+  padding: clamp(14px, 5.8cqw, 26px) clamp(14px, 6.3cqw, 30px); /* 22 / 24 @380 */
+  border-radius: var(--r-2xl);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--glass-blur));
@@ -21,25 +27,27 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   pointer-events: none;
+  z-index: var(--z-base);
 }
 
 .head {
   position: relative;
-  z-index: 2;
+  z-index: var(--z-content);
   display: flex;
   align-items: baseline;
-  gap: 9px;
+  gap: 0.5em;
+  flex-wrap: wrap;
 }
 
 .title {
-  font-size: clamp(15px, 1.6vw, 19px);
+  font-size: clamp(14px, 5cqw, 22px); /* 19px @380 */
   font-weight: 900;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
 .hint {
-  font-size: clamp(11px, 1.02vw, 12px);
+  font-size: clamp(10.5px, 3.16cqw, 14px); /* 12px @380 */
   font-weight: 800;
   color: var(--ink-faint);
   white-space: nowrap;
@@ -47,17 +55,63 @@
 
 .action {
   margin-left: auto;
-  font-size: clamp(11px, 1.06vw, 12.5px);
+  padding: 4px 2px;
+  font-size: clamp(10.5px, 3.3cqw, 14px); /* 12.5px @380 */
   font-weight: 900;
-  color: #ffe9a8;
+  color: var(--gold);
   white-space: nowrap;
+  transition: opacity var(--dur) ease;
+}
+
+.action:active {
+  opacity: 0.65;
 }
 
 .body {
   position: relative;
-  z-index: 2;
+  z-index: var(--z-content);
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
+}
+
+/* ── 面板内错误态 ── */
+.errorBox {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  text-align: center;
+  padding: 0.6em 0;
+}
+
+.errorIcon {
+  font-size: clamp(18px, 6cqw, 26px);
+  line-height: 1;
+}
+
+.errorText {
+  font-size: clamp(11px, 3.3cqw, 14px);
+  font-weight: 700;
+  color: var(--ink-faint);
+  max-width: 30ch;
+}
+
+.errorRetry {
+  margin-top: 0.3em;
+  padding: 0.5em 1.4em;
+  border-radius: var(--r-pill);
+  background: var(--surface-light);
+  color: var(--ink-on-light);
+  font-size: clamp(11px, 3.3cqw, 14px);
+  font-weight: 900;
+  transition: transform var(--dur) var(--ease);
+}
+
+.errorRetry:active {
+  transform: scale(0.95);
 }

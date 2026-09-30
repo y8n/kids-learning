@@ -17,5 +17,11 @@ pnpm-debug.log*
 # 测试 / 覆盖率
 coverage/
 
-# 注意：build/ 是 GitHub Pages 的发布产物，由 .github/workflows/static.yml 直接发布，
-# 所以 **必须提交进仓库**，不能忽略。
+# 构建产物
+# 构建在 GitHub Actions 的 Runner 上完成（见 .github/workflows/static.yml），
+# 产物不提交进源码仓库，保持 diff 干净、仓库体积可控。
+build/
+
+# 编辑器缓存
+.eslintcache
+.vite/

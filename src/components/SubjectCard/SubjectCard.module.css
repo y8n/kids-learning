@@ -1,15 +1,30 @@
+/* ════════════════════════════════════════════════════════════════
+   学科卡片
+   ────────────────────────────────────────────────────────────────
+   卡片内部全部用 cqw（容器宽度百分比）表述，而不是 vw。
+   基准：设计稿卡片宽 232px，所以 1cqw = 2.32px。
+   这样卡片在 iPad 横屏 / 竖屏 / 手机下比例完全一致，只是整体放大缩小。
+   ════════════════════════════════════════════════════════════════ */
+
+/* 外层壳：容器查询的锚点，也是栅格项 */
+.slot {
+  min-width: 0;
+  min-height: 0;
+  container-type: inline-size;
+}
+
 .card {
   position: relative;
   overflow: hidden;
-  /* button 默认会把内容垂直居中，这里显式改成「顶对齐 + 纵向排列」 */
+  /* button 默认把内容垂直居中，这里显式改成顶对齐 */
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   width: 100%;
   height: 100%;
-  padding: clamp(14px, 1.7vw, 20px);
-  border-radius: var(--r-card);
+  padding: clamp(12px, 8.6cqw, 26px); /* 20px @232 */
+  border-radius: var(--r-xl);
   text-align: left;
   box-shadow: var(--shadow-card);
   transition:
@@ -18,14 +33,14 @@
   will-change: transform;
 }
 
-/* 按下：整卡轻微缩放 + 阴影收紧（本人指定的交互） */
+/* 按下：整卡轻微缩放 + 阴影收紧 */
 .card:active {
   transform: scale(0.965);
-  box-shadow: 0 6px 16px rgba(20, 15, 70, 0.22);
+  box-shadow: var(--shadow-press);
 }
 
 .card:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.9);
+  outline: 3px solid #fff;
   outline-offset: 3px;
 }
 
@@ -46,36 +61,38 @@
   width: 84%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.22);
   pointer-events: none;
+  z-index: var(--z-base);
 }
 
 /* ── 文字区（左上）── */
 .text {
   position: relative;
-  z-index: 2;
+  z-index: var(--z-content);
   display: block;
   max-width: 62%;
 }
 
 .name {
   display: block;
-  font-size: clamp(19px, 2.37vw, 28px);
+  font-size: clamp(17px, 12.1cqw, 34px); /* 28px @232 */
   font-weight: 900;
   letter-spacing: 1.2px;
   line-height: 1.15;
-  text-shadow: var(--text-shadow);
+  color: var(--ink-on-card);
+  text-shadow: var(--text-glow);
 }
 
 .subtitle {
   display: block;
-  margin-top: clamp(4px, 0.6vw, 7px);
-  max-width: 104px;
-  font-size: clamp(10.5px, 1.06vw, 12.5px);
+  margin-top: clamp(3px, 3cqw, 8px); /* 7px @232 */
+  max-width: 45cqw; /* 104px @232，保证不压到立绘 */
+  font-size: clamp(10px, 5.4cqw, 16px); /* 12.5px @232 */
   font-weight: 800;
   line-height: 1.4;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: var(--text-shadow-sm);
+  color: var(--ink-on-card-soft);
+  text-shadow: var(--text-glow);
 }
 
 /* ── 角色立绘（右下，底边贴齐不裁脚）── */
@@ -83,8 +100,8 @@
   position: absolute;
   right: 2px;
   bottom: 0;
-  z-index: 1;
-  width: 87%;
+  z-index: var(--z-art);
+  width: calc(87% * var(--art-scale, 1));
   height: 91%;
   object-fit: contain;
   object-position: bottom right;
@@ -93,21 +110,16 @@
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
 }
 
-/* 小马宝莉的立绘宽高比 0.87，同尺寸下显得比其他角色大一圈，单独收窄 */
-.card[data-subject='literacy'] .art {
-  width: 66%;
-}
-
 /* ── 右上角进度小标 ── */
 .progress {
   position: absolute;
-  top: clamp(10px, 1.3vw, 16px);
-  right: clamp(10px, 1.3vw, 16px);
-  z-index: 2;
-  padding: 4px 10px;
+  top: clamp(8px, 6.9cqw, 18px); /* 16px @232 */
+  right: clamp(8px, 6.9cqw, 18px);
+  z-index: var(--z-content);
+  padding: 0.5em 1.2em;
   border-radius: var(--r-pill);
-  background: rgba(0, 0, 0, 0.18);
-  font-size: clamp(10.5px, 1.06vw, 12.5px);
+  background: rgba(255, 255, 255, 0.6);
+  font-size: clamp(10px, 5.4cqw, 15px); /* 12.5px @232 */
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--ink-on-card);
 }

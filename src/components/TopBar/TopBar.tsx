@@ -1,4 +1,4 @@
-import type { ChildProfile } from '@/api'
+import type { ApiError, ChildProfile } from '@/api'
 import styles from './TopBar.module.css'
 
 const WEEK = ['日', '一', '二', '三', '四', '五', '六']
@@ -15,37 +15,51 @@ function greetingOf(hour: number): string {
 interface TopBarProps {
   profile: ChildProfile | null
   loading: boolean
-  onOpenProfile?: () => void
+  error: ApiError | null
+  onRetryProfile: () => void
+  onOpenProfile: () => void
 }
 
 /**
  * 顶栏
  * 左：孩子头像 / 昵称 / 等级 / 星星 / 年级
  * 右：日期星期 + 个人中心入口
+ *
+ * 档案加载失败时显示可点击的「重试」，而不是留一个永远转不完的骨架屏，
+ * 也不会拿默认值冒充真实数据（Lv.0 / 0 星）。
  */
-export function TopBar({ profile, loading, onOpenProfile }: TopBarProps) {
+export function TopBar({ profile, loading, error, onRetryProfile, onOpenProfile }: TopBarProps) {
   const now = new Date()
   const dateText = `${pad2(now.getMonth() + 1)}-${pad2(now.getDate())} 星期${WEEK[now.getDay()]}`
   const greeting = greetingOf(now.getHours())
 
+  const showSkeleton = loading && !profile
+
   return (
     <header className={styles.bar}>
       <div className={styles.me}>
-        <div className={styles.avatar}>{profile?.avatar ?? '🐰'}</div>
+        <div className={styles.avatar} aria-hidden="true">
+          {profile?.avatar ?? '🐰'}
+        </div>
+
         <div className={styles.who}>
-          {loading || !profile ? (
+          {error && !profile ? (
+            <button type="button" className={styles.retry} onClick={onRetryProfile}>
+              资料加载失败 · 点此重试
+            </button>
+          ) : showSkeleton ? (
             <>
-              <span className={`${styles.skel} ${styles.skelName}`} />
-              <span className={`${styles.skel} ${styles.skelMeta}`} />
+              <span className={`${styles.skel} ${styles.skelName}`} aria-hidden="true" />
+              <span className={`${styles.skel} ${styles.skelMeta}`} aria-hidden="true" />
             </>
-          ) : (
+          ) : profile ? (
             <>
               <b>{profile.name}</b>
               <span>
                 Lv.{profile.level} · {profile.stars} ⭐ · {profile.grade}
               </span>
             </>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -57,7 +71,7 @@ export function TopBar({ profile, loading, onOpenProfile }: TopBarProps) {
       </div>
 
       <button type="button" className={styles.mine} onClick={onOpenProfile}>
-        👤 个人中心
+        <span aria-hidden="true">👤</span> 个人中心
       </button>
     </header>
   )

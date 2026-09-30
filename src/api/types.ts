@@ -36,6 +36,13 @@ export interface Subject {
   theme: { from: string; to: string }
   /** 是否已开放。false 时前端只展示、点了给「敬请期待」提示 */
   enabled: boolean
+  /**
+   * 立绘缩放系数，默认 1。
+   * 立绘按 contain 适配固定容器，宽高比越大的角色显示得越"矮胖"、视觉分量越重，
+   * 需要单独收一点（如小马宝莉 0.87 宽高比 → 0.76）。
+   * 这是**角色素材自身的属性**，所以放在数据层由后端/mock 给出，而不是写死在 CSS 里。
+   */
+  artScale?: number
   /** 今日进度 */
   progress: { done: number; total: number }
 }

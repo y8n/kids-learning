@@ -1,11 +1,28 @@
+/* ════════════════════════════════════════════════════════════════
+   首页骨架布局
+   ────────────────────────────────────────────────────────────────
+   Tier A（≥900px 且横屏，含 11 寸 iPad Air 横屏 1180×820）
+     顶栏 + [左侧 2×2 学科 | 右侧两栏]，整屏铺满不滚动。与设计稿 1:1。
+
+   Tier B（窄屏 / 竖屏）
+     单列堆叠，整页可滚动。见文件末尾的媒体查询。
+   ════════════════════════════════════════════════════════════════ */
+
 .app {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--gap-top);
+
+  /* 安全区：iPad 无刘海时 env() 为 0，等同于普通 padding；
+     全面屏 iPhone 横屏/竖屏时自动避开传感器区和 Home 指示条 */
   padding: var(--page-pad);
+  padding-top: max(var(--page-pad), env(safe-area-inset-top));
+  padding-bottom: max(var(--page-pad), env(safe-area-inset-bottom));
+  padding-left: max(var(--page-pad), env(safe-area-inset-left));
+  padding-right: max(var(--page-pad), env(safe-area-inset-right));
 }
 
 /* ── 主体：左 2×2 学科 / 右 两栏 ── */
@@ -13,7 +30,7 @@
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1fr var(--rail-w);
+  grid-template-columns: minmax(0, 1fr) var(--rail-w);
   gap: var(--gap);
   /* 卡片区比顶栏再内缩一圈，形成「头部宽、内容窄」的居中构图 */
   margin: 0 var(--card-inset) var(--card-inset);
@@ -22,21 +39,24 @@
 .subjects {
   min-height: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: var(--gap);
 }
 
 .rail {
   min-height: 0;
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: var(--gap);
 }
 
-/* ── 加载骨架 ── */
+/* ════════════════════════════════════════════════════════════════
+   加载 / 错误态
+   ════════════════════════════════════════════════════════════════ */
+
 .subjectSkeleton {
-  border-radius: var(--r-card);
+  border-radius: var(--r-xl);
   background: rgba(255, 255, 255, 0.14);
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -51,7 +71,7 @@
   }
 }
 
-/* ── 错误态 ── */
+/* 学科区整体加载失败 */
 .error {
   grid-column: 1 / -1;
   display: flex;
@@ -59,50 +79,62 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border-radius: var(--r-card);
+  padding: 24px;
+  text-align: center;
+  border-radius: var(--r-xl);
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--glass-blur));
 }
 
-.error b {
-  font-size: clamp(16px, 1.8vw, 21px);
+.errorIcon {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1;
+}
+
+.errorTitle {
+  font-size: clamp(15px, 1.8vw, 20px);
   font-weight: 900;
 }
 
-.error span {
-  font-size: clamp(12px, 1.2vw, 14px);
-  color: var(--ink-faint);
+.errorMsg {
+  font-size: clamp(11.5px, 1.2vw, 14px);
   font-weight: 700;
+  color: var(--ink-faint);
+  max-width: 44ch;
 }
 
 .retry {
   margin-top: 6px;
-  height: clamp(40px, 4.2vw, 48px);
+  height: 44px;
   padding: 0 26px;
   border-radius: var(--r-pill);
-  background: #fff;
-  color: #6d5ce7;
-  font-size: clamp(14px, 1.4vw, 16px);
+  background: var(--surface-light);
+  color: var(--ink-on-light);
+  font-size: clamp(13px, 1.4vw, 16px);
   font-weight: 900;
   box-shadow: var(--shadow-solid);
+  transition: transform var(--dur) var(--ease);
+}
+.retry:active {
+  transform: scale(0.96);
 }
 
 /* ── 轻提示 ── */
 .toast {
   position: fixed;
   left: 50%;
-  bottom: clamp(24px, 4vw, 48px);
+  bottom: max(clamp(24px, 4vw, 48px), env(safe-area-inset-bottom));
   transform: translate(-50%, 12px);
-  z-index: 50;
+  z-index: var(--z-toast);
   max-width: 80vw;
   padding: 12px 26px;
   border-radius: var(--r-pill);
-  background: rgba(24, 18, 60, 0.9);
+  background: rgba(24, 18, 60, 0.92);
   backdrop-filter: blur(10px);
   font-size: clamp(13px, 1.4vw, 16px);
   font-weight: 800;
-  white-space: nowrap;
+  text-align: center;
   opacity: 0;
   pointer-events: none;
   transition:
@@ -113,4 +145,62 @@
 .toastOn {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Tier B —— 竖屏 / 窄屏
+   ────────────────────────────────────────────────────────────────
+   Tier A 的两栏布局在窄屏会被钳爆（390px 宽时每张卡只剩 17px）。
+   这里改为单列流式：顶栏 → 2×2 学科 → 今日学习 → 最近一周，整页滚动。
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 899px), (orientation: portrait) {
+  .app {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh; /* svh 不随移动端地址栏伸缩，避免布局跳动 */
+    width: 100%;
+    max-width: 880px;
+    margin-inline: auto;
+    gap: clamp(18px, 4vw, 30px);
+    padding: clamp(14px, 4vw, 24px);
+    padding-top: max(clamp(14px, 4vw, 24px), env(safe-area-inset-top));
+    padding-bottom: max(clamp(20px, 5vw, 32px), env(safe-area-inset-bottom));
+  }
+
+  .main {
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    gap: clamp(18px, 4vw, 30px);
+  }
+
+  /* 学科仍是 2×2 —— 这是产品的识别特征，保持住 */
+  .subjects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+    gap: clamp(10px, 3vw, 18px);
+    /* 限宽：iPad 竖屏下不限的话每张卡会撑到 370×410，一屏只看得下 4 张卡 */
+    width: 100%;
+    max-width: 620px;
+    margin-inline: auto;
+  }
+
+  /* 设计稿卡片 232×258 ≈ 9:10，Tier B 沿用同一比例 */
+  .subjects > * {
+    aspect-ratio: 9 / 10;
+  }
+
+  .rail {
+    grid-template-rows: none;
+    gap: clamp(12px, 3vw, 18px);
+  }
+}
+
+/* 超窄屏（iPhone SE / 小屏手机）：学科改单列，避免卡片过小 */
+@media (max-width: 379px) {
+  .subjects {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .subjects > * {
+    aspect-ratio: 16 / 11;
+  }
 }

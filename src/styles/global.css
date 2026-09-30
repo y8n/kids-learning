@@ -16,25 +16,36 @@ body,
 
 body {
   font-family:
-    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--ink);
-  background: linear-gradient(135deg, #1e6fe0 0%, #7b3fe4 46%, #e13b8f 100%);
-  background-attachment: fixed;
+  background: var(--brand-2); /* 底层兜底色，渐变由 ::before 铺 */
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  /* 默认 = 大屏横屏（iPad Air 横屏）：整屏铺满、不滚动 */
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
-/* 背景柔光：左上偏青、右下偏粉、右上一点白 */
+/* 背景：品牌渐变 + 三处柔光。
+   用 position:fixed 的伪元素而不是 background-attachment:fixed ——
+   后者在移动端滚动时会触发整屏重绘，掉帧明显。 */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
+  z-index: var(--z-below);
   pointer-events: none;
-  z-index: 0;
   background:
     radial-gradient(circle at 6% 2%, rgba(140, 225, 255, 0.5), transparent 40%),
     radial-gradient(circle at 96% 98%, rgba(255, 150, 215, 0.45), transparent 44%),
-    radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.14), transparent 36%);
+    radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.14), transparent 36%),
+    linear-gradient(135deg, var(--brand-1) 0%, var(--brand-2) 46%, var(--brand-3) 100%);
 }
 
 button {
@@ -44,6 +55,7 @@ button {
   background: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* 去掉移动端 300ms 点击延迟 */
 }
 
 img {
@@ -51,12 +63,67 @@ img {
   max-width: 100%;
 }
 
-/* 尊重系统的「减少动态效果」设置 */
+/* 统一焦点样式：键盘用户必须能看见焦点在哪。
+   各组件可以覆盖成更贴合自身底色的版本。 */
+:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  border-radius: var(--r-xs);
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Tier B —— 竖屏 / 窄屏（分屏、手机、iPad 竖屏）
+   ────────────────────────────────────────────────────────────────
+   两栏布局在窄屏必然崩（钳到 390px 宽时每张卡只剩 17px）。
+   这里改成「整页纵向滚动 + 单列堆叠」，并把锁死的 overflow 放开。
+   Tier A（≥900px 且横屏）保持原样：整屏铺满、无滚动条。
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 899px), (orientation: portrait) {
+  html,
+  body,
+  #root {
+    height: auto;
+    /* 百分比 min-height 在父级 height:auto 时无法解析，所以不写在这里；
+       高度下限由 .app 自己用 svh 兜（见 Home.module.css） */
+  }
+
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* 细滚动条（只在 Tier B 会真正出现） */
+@media (max-width: 899px), (orientation: portrait) {
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+  }
+}
+
+/* 兜底的「减少动态效果」：动画（如骨架 shimmer）不在 transition 覆盖范围内，
+   仍需单独关掉。 */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 高对比度偏好：加深玻璃面板边框，避免在强对比模式下糊成一片 */
+@media (prefers-contrast: more) {
+  :root {
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --ink-faint: rgba(255, 255, 255, 0.92);
   }
 }

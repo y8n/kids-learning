@@ -93,7 +93,8 @@ async function realRequest<T>(config: RequestConfig): Promise<T> {
   // 兼容两种后端风格：带信封 { code, message, data } 或直接返回数据
   if (payload && typeof payload === 'object' && 'data' in payload && 'code' in payload) {
     const env = payload as ApiEnvelope<T>
-    if (env.code !== 0) throw new ApiError(res.status, env.message || '业务处理失败', 'business-error')
+    if (env.code !== 0)
+      throw new ApiError(res.status, env.message || '业务处理失败', 'business-error')
     return env.data
   }
   return payload as T

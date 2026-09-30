@@ -9,10 +9,10 @@ import { defineMock } from '../server'
 import { todayBySubject } from '../db'
 import type { Subject, SubjectId } from '../../types'
 
-import peppaUrl from '@/assets/characters/peppa.png'
-import blueyUrl from '@/assets/characters/bluey.png'
-import chaseUrl from '@/assets/characters/chase.png'
-import pinkieUrl from '@/assets/characters/pinkie.png'
+import peppaUrl from '@/assets/characters/peppa.webp'
+import blueyUrl from '@/assets/characters/bluey.webp'
+import chaseUrl from '@/assets/characters/chase.webp'
+import pinkieUrl from '@/assets/characters/pinkie.webp'
 
 const progressOf = (id: SubjectId) => {
   const found = todayBySubject.find((x) => x.subjectId === id)
@@ -54,6 +54,8 @@ const subjects: Subject[] = [
     characterUrl: pinkieUrl,
     theme: { from: '#8BE06A', to: '#3FA83C' },
     enabled: false,
+    // 碧琪宽高比 0.87（四张里最宽），不收缩会明显比其他角色大一圈
+    artScale: 0.76,
     progress: progressOf('literacy'),
   },
 ]

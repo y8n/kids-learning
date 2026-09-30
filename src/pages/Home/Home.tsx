@@ -7,6 +7,7 @@ import {
   type Subject,
 } from '@/api'
 import { useRequest } from '@/hooks/useRequest'
+import { COMING_SOON_TEXT, SUBJECT_SKELETON_COUNT, TOAST_DURATION_MS } from '@/constants/ui'
 import { TopBar } from '@/components/TopBar/TopBar'
 import { SubjectCard } from '@/components/SubjectCard/SubjectCard'
 import { TodayPanel } from '@/components/TodayPanel/TodayPanel'
@@ -26,9 +27,10 @@ export function Home() {
   const showToast = useCallback((text: string) => {
     setToast(text)
     if (toastTimer.current) window.clearTimeout(toastTimer.current)
-    toastTimer.current = window.setTimeout(() => setToast(null), 1800)
+    toastTimer.current = window.setTimeout(() => setToast(null), TOAST_DURATION_MS)
   }, [])
 
+  // 卸载时清掉计时器，避免对已卸载组件 setState
   useEffect(() => {
     return () => {
       if (toastTimer.current) window.clearTimeout(toastTimer.current)
@@ -39,10 +41,10 @@ export function Home() {
   const handleSelectSubject = useCallback(
     (subject: Subject) => {
       if (!subject.enabled) {
-        showToast(`「${subject.name}」还在准备中，敬请期待`)
+        showToast(COMING_SOON_TEXT(subject.name))
         return
       }
-      // TODO: 接入路由后跳转到该学科的课程页
+      // TODO: 路由接入后跳转到该学科的课程页
       showToast(`进入「${subject.name}」`)
     },
     [showToast],
@@ -52,35 +54,41 @@ export function Home() {
     showToast('进入今日学习')
   }, [showToast])
 
-  const handleDetail = useCallback((what: string) => {
-    // TODO: 接入路由后跳转
-    showToast(`${what}（待接入）`)
-  }, [showToast])
-
-  const failed = subjects.error
+  const handleDetail = useCallback(
+    (what: string) => {
+      // TODO: 路由接入后跳转
+      showToast(`${what}（待接入）`)
+    },
+    [showToast],
+  )
 
   return (
     <div className={styles.app}>
       <TopBar
         profile={profile.data}
         loading={profile.loading}
+        error={profile.error}
+        onRetryProfile={profile.reload}
         onOpenProfile={() => handleDetail('个人中心')}
       />
 
       <main className={styles.main}>
-        {failed ? (
-          <div className={styles.error}>
-            <b>内容加载失败</b>
-            <span>{failed.message}</span>
+        {subjects.error ? (
+          <div className={styles.error} role="alert">
+            <span className={styles.errorIcon} aria-hidden="true">
+              📚
+            </span>
+            <b className={styles.errorTitle}>学科加载失败</b>
+            <span className={styles.errorMsg}>{subjects.error.message}</span>
             <button type="button" className={styles.retry} onClick={subjects.reload}>
               重新加载
             </button>
           </div>
         ) : (
-          <section className={styles.subjects}>
+          <section className={styles.subjects} aria-label="学科入口">
             {subjects.loading || !subjects.data
-              ? Array.from({ length: 4 }, (_, i) => (
-                  <div key={i} className={styles.subjectSkeleton} />
+              ? Array.from({ length: SUBJECT_SKELETON_COUNT }, (_, i) => (
+                  <div key={i} className={styles.subjectSkeleton} aria-hidden="true" />
                 ))
               : subjects.data.map((s) => (
                   <SubjectCard key={s.id} subject={s} onSelect={handleSelectSubject} />
@@ -92,12 +100,16 @@ export function Home() {
           <TodayPanel
             data={today.data}
             loading={today.loading}
+            error={today.error}
+            onRetry={today.reload}
             onContinue={handleContinue}
             onDetail={() => handleDetail('今日详情')}
           />
           <WeeklyPanel
             data={weekly.data}
             loading={weekly.loading}
+            error={weekly.error}
+            onRetry={weekly.reload}
             onDetail={() => handleDetail('全部记录')}
           />
         </aside>

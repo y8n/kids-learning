@@ -1,0 +1,82 @@
+.wrap {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: min(440px, 100%);
+  padding: 32px 28px;
+  border-radius: var(--r-2xl);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-panel);
+  text-align: center;
+}
+
+.icon {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.title {
+  margin-top: 14px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.desc {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-faint);
+}
+
+.detail {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: var(--r-sm);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.primary {
+  min-height: 46px;
+  padding: 0 28px;
+  border-radius: var(--r-pill);
+  background: var(--surface-light);
+  color: var(--ink-on-light);
+  font-size: 16px;
+  font-weight: 900;
+  box-shadow: var(--shadow-solid);
+}
+
+.ghost {
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid var(--glass-border);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.primary:active,
+.ghost:active {
+  transform: scale(0.96);
+}
