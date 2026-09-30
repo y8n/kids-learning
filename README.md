@@ -100,6 +100,19 @@ push main  →  checkout  →  npm ci  →  typecheck  →  lint  →  build  �
 - 所有静态资源带 `/kids-learning/` 前缀（`vite.config.ts` 的 `base`），
   路由 `basename` 复用 `import.meta.env.BASE_URL`，两者永远一致
 
+### 纯文档改动不会触发部署
+
+`**.md`、`LICENSE`、编辑器配置（`.prettierrc.json` / `.editorconfig` / `.vscode/`）
+以及归档素材 `assets/characters-source/` 都在 `paths-ignore` 里。
+
+**原因不只是省 CI 时间**：每跑一次都会产出新的 `BUILD_TIME`（来自 `run_started_at`），
+**前台挂着的 PWA 会因此自动刷新** —— 只改个文档就让小孩 iPad 上的应用刷一下，
+是没必要的干扰。
+
+> ⚠️ 两条容易改错：**别把 `.github/**` 加进去**（改 workflow 必须跑一次验证它自己）；
+> `.nvmrc` / `eslint.config.js` / `tsconfig.json` 看着像配置，但都在 CI 链路上，也不能忽略。
+> 详见 `AGENTS.md`。
+
 ---
 
 ## 响应式策略
