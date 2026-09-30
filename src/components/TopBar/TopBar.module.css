@@ -20,7 +20,15 @@
   display: flex;
   align-items: center;
   gap: clamp(8px, 1.1vw, 14px);
-  padding: 0.12em 1.7em 0.12em 0.5em;
+  /* ⚠️ 头像四周必须留**同一个值**的边距。
+     胶囊左端是一段半径 = 高/2 的半圆弧，只有「左内边距 == 上下内边距」时，
+     头像圆才与那段弧**同心**；否则左宽上窄，圆被推右，左侧会夹出一块月牙形空隙。
+     设计稿是 padding: 9px 24px 9px 9px —— 本来就是等距的，
+     早先误换算成 0.12em / 0.5em（上 1.9、左 8）把它破坏了。
+     9 @1180 对应 0.763vw / 1.098vh。 */
+  --avatar-pad: clamp(5px, min(0.763vw, 1.098vh), 9px);
+  padding: var(--avatar-pad) clamp(12px, min(2.034vw, 2.927vh), 24px) var(--avatar-pad)
+    var(--avatar-pad);
   border-radius: var(--r-pill);
   background: rgba(0, 0, 0, 0.26);
   backdrop-filter: blur(10px);
