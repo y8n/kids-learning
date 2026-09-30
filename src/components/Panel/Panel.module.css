@@ -1,6 +1,20 @@
 /* ════════════════════════════════════════════════════════════════
    面板外壳（右栏两张横卡共用）
-   内部尺寸用 cqw，基准：设计稿面板宽 380px
+
+   ⚠️ cqw 的两条坑，这里都踩过：
+
+   1. cqw 解析的是**内容盒**宽度，不是外框。
+      设计稿面板外框 380、padding 22 → 内容盒 334，1cqw = 3.36px。
+      早先按 380 推算 cqw 系数，导致面板内所有元素**系统性偏小 16%**
+      （按钮 46.7px 而设计是 56px，标题 15.9 而设计是 19）。
+
+   2. 元素**不能查询自己**。`.panel` 自身用 cqw 会退回视口宽度，
+      所以面板自己的 padding 必须用 vw。
+
+   垂直尺寸一律写成 `min(cqw, vh)`：
+   面板宽度只跟视口宽度走，视口变矮时宽度不变、高度缩水，
+   只按 cqw 排版会撑爆面板（实测 1180×654 时按钮直接贴死进度条、间距归零）。
+   vh 那一支在 1180×820 与 cqw 相等（= 设计稿数值），更矮时生效。
    ════════════════════════════════════════════════════════════════ */
 
 .panel {
@@ -10,7 +24,10 @@
   flex-direction: column;
   min-height: 0;
   container-type: inline-size;
-  padding: clamp(14px, 5.8cqw, 26px) clamp(14px, 6.3cqw, 30px); /* 22 / 24 @380 */
+
+  /* 设计稿：padding 20px 22px（面板宽 380 / 视口宽 1180） */
+  padding: clamp(12px, min(1.695vw, 2.439vh), 20px) clamp(14px, 1.864vw, 22px);
+
   border-radius: var(--r-2xl);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -40,14 +57,14 @@
 }
 
 .title {
-  font-size: clamp(14px, 5cqw, 22px); /* 19px @380 */
+  font-size: clamp(14px, min(5.689cqw, 2.317vh), 21px); /* 19px @334 */
   font-weight: 900;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
 .hint {
-  font-size: clamp(10.5px, 3.16cqw, 14px); /* 12px @380 */
+  font-size: clamp(10px, min(3.593cqw, 1.463vh), 13px); /* 12px @334 */
   font-weight: 800;
   color: var(--ink-faint);
   white-space: nowrap;
@@ -56,7 +73,7 @@
 .action {
   margin-left: auto;
   padding: 4px 2px;
-  font-size: clamp(10.5px, 3.3cqw, 14px); /* 12.5px @380 */
+  font-size: clamp(10px, min(3.743cqw, 1.524vh), 13.5px); /* 12.5px @334 */
   font-weight: 900;
   color: var(--gold);
   white-space: nowrap;

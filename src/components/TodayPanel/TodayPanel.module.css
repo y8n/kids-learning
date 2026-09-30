@@ -1,15 +1,16 @@
-/* 基准：设计稿面板宽 380px */
+/* 设计基准：面板外框 380、内容盒 334（padding 22），1cqw = 3.36px
+   垂直尺寸写成 min(cqw, vh) —— 视口变矮时跟着缩，否则会撑爆面板 */
 
 .big {
   display: flex;
   align-items: flex-end;
   gap: 0.22em;
-  margin-top: clamp(6px, 3.2cqw, 14px);
-  min-height: clamp(30px, 11.6cqw, 48px);
+  margin-top: clamp(4px, min(2.395cqw, 0.976vh), 12px); /* 8px */
+  min-height: clamp(28px, min(13.174cqw, 5.366vh), 48px); /* 44px */
 }
 
 .big b {
-  font-size: clamp(28px, 13.7cqw, 58px); /* 52px @380 */
+  font-size: clamp(28px, min(15.569cqw, 6.341vh), 58px); /* 52px */
   font-weight: 900;
   line-height: 1;
   letter-spacing: -1px;
@@ -17,7 +18,7 @@
 
 .big span {
   padding-bottom: 0.35em;
-  font-size: clamp(11.5px, 4.08cqw, 17px); /* 15.5px @380 */
+  font-size: clamp(11.5px, min(4.641cqw, 1.89vh), 17px); /* 15.5px */
   font-weight: 800;
   color: rgba(255, 255, 255, 0.86);
 }
@@ -42,8 +43,11 @@
 }
 
 .bar {
-  height: clamp(9px, 4.21cqw, 18px); /* 16px @380 */
-  margin-top: clamp(8px, 4.2cqw, 18px);
+  height: clamp(8px, min(4.79cqw, 1.951vh), 18px); /* 16px */
+  margin-top: clamp(8px, min(4.79cqw, 1.951vh), 18px); /* 16px */
+  /* 兜底最小间距：单个 auto 在空间不足时会归零，按钮就贴住进度条了。
+     flex 容器里 margin 不折叠，这里给一个地板，剩下的空位由 .go 的 auto 分配。 */
+  margin-bottom: 10px;
   border-radius: var(--r-pill);
   background: rgba(255, 255, 255, 0.28);
   overflow: hidden;
@@ -59,13 +63,13 @@
 }
 
 .go {
-  margin-top: auto;
+  margin-top: auto; /* 富余空间全给这里，把按钮推到面板底部 */
   min-height: 44px; /* 触摸目标下限 */
-  height: clamp(44px, 14.7cqw, 62px); /* 56px @380 */
+  height: clamp(44px, min(16.766cqw, 6.829vh), 62px); /* 56px */
   border-radius: var(--r-md);
   background: var(--surface-light);
   color: var(--ink-on-light);
-  font-size: clamp(14px, 4.74cqw, 20px); /* 18px @380 */
+  font-size: clamp(14px, min(5.389cqw, 2.195vh), 20px); /* 18px */
   font-weight: 900;
   display: flex;
   align-items: center;
