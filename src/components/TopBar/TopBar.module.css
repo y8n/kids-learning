@@ -20,13 +20,19 @@
   display: flex;
   align-items: center;
   gap: clamp(8px, 1.1vw, 14px);
+  /* 三块胶囊统一高度 = 顶栏满高，整条顶栏读起来是一行齐整的胶囊。
+     （之前是 69.9 / 56.7 / 60 三个不同高度） */
+  height: var(--topbar-h);
   /* ⚠️ 头像四周必须留**同一个值**的边距。
      胶囊左端是一段半径 = 高/2 的半圆弧，只有「左内边距 == 上下内边距」时，
      头像圆才与那段弧**同心**；否则左宽上窄，圆被推右，左侧会夹出一块月牙形空隙。
      设计稿是 padding: 9px 24px 9px 9px —— 本来就是等距的，
      早先误换算成 0.12em / 0.5em（上 1.9、左 8）把它破坏了。
-     9 @1180 对应 0.763vw / 1.098vh。 */
-  --avatar-pad: clamp(5px, min(0.763vw, 1.098vh), 9px);
+
+     这里不写死 9px，而是由高度反推：(胶囊高 − 头像直径) / 2。
+     这样无论视口怎么变，左内边距恒等于上下间隙，同心性不会被别处的改动破坏。 */
+  --avatar-size: clamp(34px, min(4.4vw, 6.34vh), 52px);
+  --avatar-pad: calc((var(--topbar-h) - var(--avatar-size)) / 2);
   padding: var(--avatar-pad) clamp(12px, min(2.034vw, 2.927vh), 24px) var(--avatar-pad)
     var(--avatar-pad);
   border-radius: var(--r-pill);
@@ -35,7 +41,7 @@
 }
 
 .avatar {
-  width: clamp(34px, min(4.4vw, 6.34vh), 52px); /* 52px @1180×820 */
+  width: var(--avatar-size); /* 由 .me 定义，和 --avatar-pad 同源 */
   aspect-ratio: 1;
   flex: 0 0 auto;
   border-radius: 50%;
@@ -109,7 +115,12 @@
 
 /* ── 右：日期 + 个人中心 ── */
 .date {
-  padding: 0.45em clamp(12px, min(1.9vw, 2.7vh), 22px);
+  height: var(--topbar-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(12px, min(1.9vw, 2.7vh), 22px);
   /* 与 .me / .mine 统一为胶囊。
      设计稿里这里是 20px（--r-lg），三块圆角各不相同，视觉上「日期」明显更方。 */
   border-radius: var(--r-pill);
@@ -134,7 +145,7 @@
 }
 
 .mine {
-  height: clamp(44px, min(5.1vw, 7.32vh), 60px); /* 60px，下限保证触摸目标 */
+  height: var(--topbar-h); /* 与 .me / .date 一致；下限 52px 仍满足 44px 触摸目标 */
   padding: 0 clamp(14px, min(2.4vw, 3.4vh), 28px);
   border-radius: var(--r-pill);
   background: var(--surface-light-soft);
