@@ -109,7 +109,10 @@
      cqw 的基准由 container-type 明确指定，不受包含块规则影响。
      78.9cqw × 256 ≈ 202px，与设计稿一致。 */
   width: calc(78.9cqw * var(--art-scale, 1));
-  height: 91.4%; /* 236 / 258 */
+  /* 高度也必须跟着 artScale 一起缩：
+     object-fit:contain 取「宽高比里较小的那个」，
+     布鲁伊(0.69)、阿奇(0.55) 都是**高度受限** —— 只缩宽度对他们毫无效果。 */
+  height: calc(91.4% * var(--art-scale, 1)); /* 236 / 258 */
   object-fit: contain;
   object-position: bottom right;
   pointer-events: none;

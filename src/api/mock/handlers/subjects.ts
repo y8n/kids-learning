@@ -36,6 +36,8 @@ const subjects: Subject[] = [
     characterUrl: blueyUrl,
     theme: { from: '#4FD8F5', to: '#0EA5C9' },
     enabled: false,
+    // 比其它角色高（162×236 顶到卡片上沿），收一点避免压到右上角进度标
+    artScale: 0.93,
     progress: progressOf('thinking'),
   },
   {
@@ -45,6 +47,9 @@ const subjects: Subject[] = [
     characterUrl: chaseUrl,
     theme: { from: '#FFB067', to: '#F2632E' },
     enabled: false,
+    // 阿奇很高（130×236），耳朵/头盔顶到卡片上沿，会压在右上角进度标上。
+    // 收到 0.85 后头顶下移到约 y=61，让开进度标（底部约 y=45）。
+    artScale: 0.85,
     progress: progressOf('encyclopedia'),
   },
   {
