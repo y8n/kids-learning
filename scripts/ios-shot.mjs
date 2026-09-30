@@ -2,8 +2,9 @@
 /**
  * iPad 模拟器截图 —— 横屏 + 竖屏
  *
- *   npm run ios:shot                     # 截线上地址
+ *   npm run ios:shot                     # 截线上地址（Safari，横屏 + 竖屏）
  *   npm run ios:shot -- --url http://127.0.0.1:5180/   # 截本地 dev
+ *   npm run ios:shot -- --current        # 只截当前画面（用于 PWA，见下）
  *
  * 产物写到 shots/ （已 gitignore）。
  *
@@ -13,6 +14,12 @@
  * 所以：
  *   · 有权限 → 两个方向全自动截图
  *   · 没权限 → 能截的先截，并打印开通权限的确切步骤（一次开通，以后全自动）
+ *
+ * ── PWA 为什么要用 --current ──
+ * 主屏 Web Clip 是由 SpringBoard 拉起的，`simctl` 没有对应命令
+ * （试过 com.apple.webapp 和 WebKit.PushBundle.<uuid>，前者起来了但不显示内容，
+ *   后者直接报 FBSOpenApplicationServiceError）。
+ * 所以 PWA 截图只能：你先在模拟器里点一下图标 → 再跑 `-- --current`。
  */
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, rmSync } from 'node:fs'
@@ -141,6 +148,21 @@ async function main() {
 
   await boot(simctl, udid)
   console.log('状态     已启动')
+
+  // --current：不打开网页、不旋转，只把当前画面截下来。
+  // PWA 的图标只能手动点，这是目前唯一能截到它的办法。
+  if (argv.includes('--current')) {
+    mkdirSync(SHOT_DIR, { recursive: true })
+    const probeNow = join(SHOT_DIR, '.probe.png')
+    await capture(simctl, udid, probeNow)
+    const now = orientationOf(probeNow)
+    rmSync(probeNow, { force: true })
+    const file = join(SHOT_DIR, `ipad-${now}.png`)
+    await capture(simctl, udid, file)
+    console.log(`✓ ${file}  (${now})`)
+    console.log('\n--current 只截当前画面：不打开网页、不旋转。')
+    return
+  }
 
   run(simctl, ['openurl', udid, url])
   console.log('状态     已在 Safari 打开，等待渲染…')

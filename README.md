@@ -41,9 +41,17 @@ npm run ios:shot     # iPad 模拟器截图（横屏 + 竖屏）
 要验证「真机 Safari 到底渲染成什么样」时用它 —— 比无头 Chrome 可信，因为跑的是真正的 iPadOS Safari。
 
 ```bash
-npm run ios:shot                                   # 截线上地址
+npm run ios:shot                                   # 截线上地址（Safari，横屏 + 竖屏）
 npm run ios:shot -- --url http://127.0.0.1:5180/   # 截本地 dev
+npm run ios:shot -- --current                      # 只截当前画面
 ```
+
+**要截 PWA 全屏效果，得用 `--current`。** 主屏 Web Clip 是 SpringBoard 拉起的，
+`simctl` 没有对应命令（试过 `com.apple.webapp` 和 `WebKit.PushBundle.<uuid>`，
+前者起来了但不显示内容，后者直接报错）。所以流程是：
+
+1. 在模拟器主屏点一下应用图标
+2. `npm run ios:shot -- --current`
 
 产物写到 `shots/`（已 gitignore）：`ipad-landscape.png` + `ipad-portrait.png`。
 
