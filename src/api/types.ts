@@ -43,6 +43,12 @@ export interface Subject {
    * 这是**角色素材自身的属性**，所以放在数据层由后端/mock 给出，而不是写死在 CSS 里。
    */
   artScale?: number
+  /**
+   * 立绘水平偏移，正数向左。单位是**卡片宽度的百分比**（cqw），跟着卡片缩放。
+   * 立绘统一贴右下角，但角色越窄（如阿奇 0.55）左侧空得越多、看起来越贴边，
+   * 需要单独往左挪一点找回视觉重心。
+   */
+  artOffsetX?: number
   /** 今日进度 */
   progress: { done: number; total: number }
 }

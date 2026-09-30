@@ -19,10 +19,19 @@ interface SubjectCardProps {
  * 而 `container-type` 只能在祖先元素上声明（元素不能查询自己），所以需要这层壳。
  */
 export function SubjectCard({ subject, onSelect }: SubjectCardProps) {
-  const { name, subtitle, characterUrl, theme, enabled, artScale, progress } = subject
+  const { name, subtitle, characterUrl, theme, enabled, artScale, artOffsetX, progress } = subject
 
   return (
-    <div className={styles.slot} style={{ '--art-scale': artScale ?? 1 } as CSSProperties}>
+    <div
+      className={styles.slot}
+      style={
+        {
+          '--art-scale': artScale ?? 1,
+          // 单位是 cqw（卡片宽度的 1%），跟着卡片缩放，不写死像素
+          '--art-offset-x': `${artOffsetX ?? 0}cqw`,
+        } as CSSProperties
+      }
+    >
       <button
         type="button"
         className={`${styles.card} ${enabled ? '' : styles.locked}`}

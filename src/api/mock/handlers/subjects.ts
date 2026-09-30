@@ -48,8 +48,11 @@ const subjects: Subject[] = [
     theme: { from: '#FFB067', to: '#F2632E' },
     enabled: false,
     // 阿奇很高（130×236），耳朵/头盔顶到卡片上沿，会压在右上角进度标上。
-    // 收到 0.85 后头顶下移到约 y=61，让开进度标（底部约 y=45）。
+    // 收到 0.85 后头顶下移到约 y=58，让开进度标（底部 y=51）。
     artScale: 0.85,
+    // 他是四张里最窄的（宽高比 0.55），右对齐后左边空一大块、看着贴边。
+    // 6cqw ≈ 15px 是试出来的上限：再往左（10/14）头盔就贴到副标题了。
+    artOffsetX: 6,
     progress: progressOf('encyclopedia'),
   },
   {

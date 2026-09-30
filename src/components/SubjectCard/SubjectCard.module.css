@@ -98,7 +98,8 @@
 /* ── 角色立绘（右下，底边贴齐不裁脚）── */
 .art {
   position: absolute;
-  right: 2px;
+  /* 2px 是设计稿的贴边量；--art-offset-x 是每个角色各自的水平微调（正数向左） */
+  right: calc(2px + var(--art-offset-x, 0cqw));
   bottom: 0;
   z-index: var(--z-art);
   /* 用 cqw（= 卡片宽度的 1%）而不是 %：
