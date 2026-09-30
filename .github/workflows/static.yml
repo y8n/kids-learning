@@ -42,13 +42,18 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # 注入「本次构建时刻」。不能用 `env: BUILD_TIME: ${{ github.run_started_at }}` ——
+      # 实测该表达式在这里会取到空串，产物里就成了「v0.1.0发布于」这种残句。
+      # 写成 GITHUB_ENV 更稳，后续步骤都能读到。
+      - name: Stamp build time
+        run: |
+          STAMP="${{ github.run_started_at }}"
+          [ -n "$STAMP" ] || STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "BUILD_TIME=$STAMP" >> "$GITHUB_ENV"
+          echo "BUILD_TIME=$STAMP"
+
       - name: Build
         run: npm run build
-        env:
-          # 注入「本次工作流触发时刻」。vite.config.ts 读取后写进产物，
-          # 首页右下角点击版本号会显示这个时间。
-          # 不注入则会退回构建机器上的当前时刻，本地开发够用，CI 上不够准。
-          BUILD_TIME: ${{ github.run_started_at }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

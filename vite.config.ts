@@ -12,7 +12,10 @@ const pkg = JSON.parse(
  * 本地构建没有这个变量，退回「此刻」，保证页面上永远有值。
  * 展示时统一按 Asia/Shanghai 格式化，见 src/constants/version.ts。
  */
-const buildTime = process.env.BUILD_TIME ?? new Date().toISOString()
+// 注意用 `||` 而不是 `??`：CI 里变量存在但为空串的情况出现过
+// （`github.run_started_at` 在某些触发方式下取不到值），
+// `??` 只在 null/undefined 时兜底，空串会一路带着走，页面上就会出现「v0.1.0发布于」这种残句。
+const buildTime = process.env.BUILD_TIME?.trim() || new Date().toISOString()
 
 /**
  * 部署在 GitHub Pages 的项目页上，地址是：
