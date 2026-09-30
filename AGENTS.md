@@ -73,6 +73,27 @@ npm run ios:shot -- --current    # PWA：不打开网页，截当前前台应用
 > 💡 只要不跑默认模式（那个会打开 Safari 把它顶掉），**PWA 会一直留在前台**，
 > 之后可以反复 `--current` 截图。
 
+### 改了代码怎么让 PWA 刷到新版
+
+**PWA 挂在前台时不会自己发请求**，所以永远停在打开时那个版本。
+「关掉重开」也不保险：GitHub Pages 给 `index.html` 的是 `cache-control: max-age=600`，
+10 分钟内重开仍可能命中**旧 HTML**，而旧 HTML 指向旧的 hash 资源 → 整个应用还是旧的。
+
+**解**：App 内置版本自检，见 `src/lib/versionWatch.ts`。
+
+- 构建时 `vite.config.ts` 额外产出 `build/version.json`，与 bundle 里的 `__BUILD_TIME__` 同值
+- 前端每 30 秒（且页面可见时）用 `cache: 'no-store'` 拉一次它
+- 构建时间变了 → 强制刷新
+
+> ⚠️ 两处容易改错：
+>
+> 1. `version.json` **必须在 `vite.config.ts` 里生成**，不能丢给 `scripts/postbuild.mjs` ——
+>    那是另一个进程，`new Date()` 会算出不一样的时间，App 就会永远认为「有新版」，无限刷新。
+> 2. 刷新用「带一个新查询参数后 `location.replace`」而不是 `location.reload()`：
+>    缓存按完整 URL 索引，换 URL 必然绕过缓存，不依赖 reload 的重验行为。
+
+**新增部署后，最多等 30 秒，PWA 会自己变成新版**，不用手动重开。
+
 ### 为什么是这个命令
 
 | 事实                                                          | 影响                                             |

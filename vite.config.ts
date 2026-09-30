@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
@@ -18,6 +18,26 @@ const pkg = JSON.parse(
 const buildTime = process.env.BUILD_TIME?.trim() || new Date().toISOString()
 
 /**
+ * 额外产出一个 `version.json`，供 App 的「版本自检」用（见 src/lib/versionWatch.ts）。
+ *
+ * ⚠️ 它必须和 `__BUILD_TIME__` 是**同一个值**，所以在这里生成。
+ * 不能丢给 scripts/postbuild.mjs —— 那是另一个进程，`new Date()` 会算出不一样的时间，
+ * 结果就是 App 永远认为「有新版本」，陷入无限刷新。
+ */
+function emitVersionFile(): Plugin {
+  return {
+    name: 'emit-version-file',
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'version.json',
+        source: JSON.stringify({ version: pkg.version, buildTime }, null, 2),
+      })
+    },
+  }
+}
+
+/**
  * 部署在 GitHub Pages 的项目页上，地址是：
  *   https://y8n.github.io/kids-learning/
  * 所以所有静态资源必须带上 /kids-learning/ 前缀，否则会 404。
@@ -27,7 +47,7 @@ const buildTime = process.env.BUILD_TIME?.trim() || new Date().toISOString()
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/kids-learning/' : '/',
 
-  plugins: [react()],
+  plugins: [react(), emitVersionFile()],
 
   define: {
     // 版本号唯一来源是 package.json，不在这里另写一份，避免两处不一致

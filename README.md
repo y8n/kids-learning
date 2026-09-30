@@ -36,6 +36,12 @@ npm run format       # Prettier 格式化
 npm run ios:shot     # iPad 模拟器截图（横屏 + 竖屏）
 ```
 
+### 版本自动刷新
+
+「添加到主屏幕」的 PWA 会一直挂在前台不发请求，改完代码也看不到新版。
+App 内置了版本自检（`src/lib/versionWatch.ts`）：每 30 秒拉一次 `version.json`，
+构建时间变了就强制刷新。**部署后最多 30 秒，已打开的页面会自己变成新版。**
+
 ### iPad 模拟器截图
 
 要验证「真机 Safari 到底渲染成什么样」时用它 —— 比无头 Chrome 可信，因为跑的是真正的 iPadOS Safari。
