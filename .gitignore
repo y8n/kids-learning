@@ -1,0 +1,21 @@
+# 依赖
+node_modules/
+
+# 编辑器 / 系统
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.local
+
+# 日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 测试 / 覆盖率
+coverage/
+
+# 注意：build/ 是 GitHub Pages 的发布产物，由 .github/workflows/static.yml 直接发布，
+# 所以 **必须提交进仓库**，不能忽略。

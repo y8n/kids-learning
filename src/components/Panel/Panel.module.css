@@ -1,0 +1,63 @@
+.panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: clamp(16px, 1.9vw, 22px) clamp(16px, 2vw, 24px);
+  border-radius: var(--r-panel);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-panel);
+}
+
+.glow {
+  position: absolute;
+  right: -22%;
+  bottom: -34%;
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+.head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.title {
+  font-size: clamp(15px, 1.6vw, 19px);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.hint {
+  font-size: clamp(11px, 1.02vw, 12px);
+  font-weight: 800;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.action {
+  margin-left: auto;
+  font-size: clamp(11px, 1.06vw, 12.5px);
+  font-weight: 900;
+  color: #ffe9a8;
+  white-space: nowrap;
+}
+
+.body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}

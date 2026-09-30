@@ -1,0 +1,113 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  /* button 默认会把内容垂直居中，这里显式改成「顶对齐 + 纵向排列」 */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: clamp(14px, 1.7vw, 20px);
+  border-radius: var(--r-card);
+  text-align: left;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+  will-change: transform;
+}
+
+/* 按下：整卡轻微缩放 + 阴影收紧（本人指定的交互） */
+.card:active {
+  transform: scale(0.965);
+  box-shadow: 0 6px 16px rgba(20, 15, 70, 0.22);
+}
+
+.card:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
+/* 未开放的学科：视觉完全一致，只是不响应按压反馈 */
+.locked {
+  cursor: default;
+}
+.locked:active {
+  transform: none;
+  box-shadow: var(--shadow-card);
+}
+
+/* 右上角装饰光斑 */
+.glow {
+  position: absolute;
+  top: -32%;
+  right: -30%;
+  width: 84%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.13);
+  pointer-events: none;
+}
+
+/* ── 文字区（左上）── */
+.text {
+  position: relative;
+  z-index: 2;
+  display: block;
+  max-width: 62%;
+}
+
+.name {
+  display: block;
+  font-size: clamp(19px, 2.37vw, 28px);
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  line-height: 1.15;
+  text-shadow: var(--text-shadow);
+}
+
+.subtitle {
+  display: block;
+  margin-top: clamp(4px, 0.6vw, 7px);
+  max-width: 104px;
+  font-size: clamp(10.5px, 1.06vw, 12.5px);
+  font-weight: 800;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: var(--text-shadow-sm);
+}
+
+/* ── 角色立绘（右下，底边贴齐不裁脚）── */
+.art {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  z-index: 1;
+  width: 87%;
+  height: 91%;
+  object-fit: contain;
+  object-position: bottom right;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+}
+
+/* 小马宝莉的立绘宽高比 0.87，同尺寸下显得比其他角色大一圈，单独收窄 */
+.card[data-subject='literacy'] .art {
+  width: 66%;
+}
+
+/* ── 右上角进度小标 ── */
+.progress {
+  position: absolute;
+  top: clamp(10px, 1.3vw, 16px);
+  right: clamp(10px, 1.3vw, 16px);
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: rgba(0, 0, 0, 0.18);
+  font-size: clamp(10.5px, 1.06vw, 12.5px);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+}

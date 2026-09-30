@@ -1,0 +1,123 @@
+.bar {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 14px);
+}
+
+/* ── 左：孩子信息 ── */
+.me {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.1vw, 13px);
+  padding: 6px 20px 6px 6px;
+  border-radius: var(--r-pill);
+  background: rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(10px);
+}
+
+.avatar {
+  width: clamp(38px, 4.4vw, 52px);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: clamp(19px, 2.3vw, 27px);
+  background: linear-gradient(150deg, #ffe066, #ffa94d);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.who {
+  min-width: 0;
+  line-height: 1.22;
+}
+.who b {
+  display: block;
+  font-size: clamp(15px, 1.6vw, 19px);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+.who span {
+  font-size: clamp(11px, 1.06vw, 12.5px);
+  font-weight: 700;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+/* 加载骨架 */
+.skel {
+  display: block;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.22);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.skelName {
+  width: 62px;
+  height: 17px;
+}
+.skelMeta {
+  width: 104px;
+  height: 11px;
+  margin-top: 5px;
+}
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ── 右：日期 + 个人中心 ── */
+.date {
+  padding: 8px clamp(14px, 1.9vw, 22px);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+.date b {
+  display: block;
+  font-size: clamp(13px, 1.44vw, 17px);
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.date span {
+  font-size: clamp(10.5px, 1.02vw, 12px);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
+.mine {
+  height: clamp(46px, 5.1vw, 60px);
+  padding: 0 clamp(16px, 2.4vw, 28px);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.94);
+  color: #6d5ce7;
+  font-size: clamp(14px, 1.44vw, 17px);
+  font-weight: 900;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-pill);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.mine:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(30, 20, 90, 0.22);
+}

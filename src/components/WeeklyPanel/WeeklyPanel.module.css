@@ -1,0 +1,109 @@
+.days {
+  display: flex;
+  gap: clamp(5px, 0.6vw, 7px);
+  margin-top: clamp(9px, 1.1vw, 13px);
+}
+
+.day {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: clamp(10px, 0.93vw, 11px);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  height: clamp(44px, 4.75vw, 56px);
+  border-radius: clamp(11px, 1.27vw, 15px);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.cell.on {
+  background: rgba(255, 224, 102, 0.92);
+  border-color: transparent;
+  box-shadow: 0 5px 12px rgba(255, 176, 32, 0.3);
+}
+
+.cell.today {
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.cell em {
+  font-size: clamp(11px, 1.19vw, 14px);
+  font-style: normal;
+  line-height: 1;
+}
+
+.cell b {
+  font-size: clamp(10px, 1.06vw, 12.5px);
+  font-weight: 900;
+  color: #7a5a00;
+  line-height: 1;
+}
+
+.skel {
+  background: rgba(255, 255, 255, 0.1);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skelNum {
+  display: block;
+  width: 30px;
+  height: 22px;
+  margin: 0 auto 4px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.2);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.sum {
+  display: flex;
+  gap: clamp(8px, 0.85vw, 10px);
+  margin-top: auto;
+  padding-top: clamp(9px, 1.1vw, 13px);
+}
+
+.stat {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(7px, 0.76vw, 9px) 6px;
+  border-radius: clamp(12px, 1.27vw, 15px);
+  background: rgba(255, 255, 255, 0.16);
+  text-align: center;
+}
+
+.stat b {
+  display: block;
+  font-size: clamp(17px, 1.78vw, 21px);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.stat span {
+  font-size: clamp(9.5px, 0.93vw, 11px);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.78);
+  white-space: nowrap;
+}
