@@ -34,6 +34,7 @@
   --z-art: 1; /* 角色立绘 */
   --z-content: 2; /* 压在立绘上的文字 */
   --z-topbar: 10;
+  --z-badge: 20; /* 右下角版本号 */
   --z-toast: 50;
   --z-overlay: 100;
 

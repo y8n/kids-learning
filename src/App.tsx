@@ -1,5 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ErrorBoundary/ErrorBoundary'
+import { ToastProvider } from '@/components/Toast/ToastProvider'
+import { VersionBadge } from '@/components/VersionBadge/VersionBadge'
 import { Home } from '@/pages/Home/Home'
 
 /**
@@ -12,13 +14,17 @@ const BASENAME = import.meta.env.BASE_URL
 export default function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter basename={BASENAME}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/* 未匹配的路径回首页，避免出现空白页 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter basename={BASENAME}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            {/* 未匹配的路径回首页，避免出现空白页 */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+        {/* 版本号挂在路由外面：以后加了课程页，它依然常驻右下角 */}
+        <VersionBadge />
+      </ToastProvider>
     </ErrorBoundary>
   )
 }

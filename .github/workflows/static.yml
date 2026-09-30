@@ -44,6 +44,11 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # 注入「本次工作流触发时刻」。vite.config.ts 读取后写进产物，
+          # 首页右下角点击版本号会显示这个时间。
+          # 不注入则会退回构建机器上的当前时刻，本地开发够用，CI 上不够准。
+          BUILD_TIME: ${{ github.run_started_at }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

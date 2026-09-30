@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback } from 'react'
 import {
   fetchProfile,
   fetchSubjects,
@@ -7,7 +7,8 @@ import {
   type Subject,
 } from '@/api'
 import { useRequest } from '@/hooks/useRequest'
-import { COMING_SOON_TEXT, SUBJECT_SKELETON_COUNT, TOAST_DURATION_MS } from '@/constants/ui'
+import { useToast } from '@/components/Toast/useToast'
+import { COMING_SOON_TEXT, SUBJECT_SKELETON_COUNT } from '@/constants/ui'
 import { TopBar } from '@/components/TopBar/TopBar'
 import { SubjectCard } from '@/components/SubjectCard/SubjectCard'
 import { TodayPanel } from '@/components/TodayPanel/TodayPanel'
@@ -20,22 +21,8 @@ export function Home() {
   const today = useRequest(fetchTodayProgress)
   const weekly = useRequest(fetchWeeklyRecord)
 
-  /* ── 轻提示 ── */
-  const [toast, setToast] = useState<string | null>(null)
-  const toastTimer = useRef<number | null>(null)
-
-  const showToast = useCallback((text: string) => {
-    setToast(text)
-    if (toastTimer.current) window.clearTimeout(toastTimer.current)
-    toastTimer.current = window.setTimeout(() => setToast(null), TOAST_DURATION_MS)
-  }, [])
-
-  // 卸载时清掉计时器，避免对已卸载组件 setState
-  useEffect(() => {
-    return () => {
-      if (toastTimer.current) window.clearTimeout(toastTimer.current)
-    }
-  }, [])
+  // 轻提示由全局 ToastProvider 提供（版本号的点击提示也走它）
+  const showToast = useToast()
 
   /* ── 交互 ── */
   const handleSelectSubject = useCallback(
@@ -114,10 +101,6 @@ export function Home() {
           />
         </aside>
       </main>
-
-      <div className={`${styles.toast} ${toast ? styles.toastOn : ''}`} role="status">
-        {toast}
-      </div>
     </div>
   )
 }

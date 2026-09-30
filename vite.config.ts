@@ -1,6 +1,18 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
+
+const pkg = JSON.parse(
+  readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8'),
+) as { version: string }
+
+/**
+ * 构建时间：CI 里由 GitHub Actions 注入 `BUILD_TIME`（工作流触发时刻，ISO 8601）。
+ * 本地构建没有这个变量，退回「此刻」，保证页面上永远有值。
+ * 展示时统一按 Asia/Shanghai 格式化，见 src/constants/version.ts。
+ */
+const buildTime = process.env.BUILD_TIME ?? new Date().toISOString()
 
 /**
  * 部署在 GitHub Pages 的项目页上，地址是：
@@ -14,6 +26,12 @@ export default defineConfig(({ command }) => ({
 
   plugins: [react()],
 
+  define: {
+    // 版本号唯一来源是 package.json，不在这里另写一份，避免两处不一致
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    __BUILD_TIME__: JSON.stringify(buildTime),
+  },
+
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -21,7 +39,6 @@ export default defineConfig(({ command }) => ({
   },
 
   build: {
-    // GitHub Actions 的工作流是把仓库里的 ./build 目录整体发布到 Pages
     outDir: 'build',
     emptyOutDir: true,
     sourcemap: false,

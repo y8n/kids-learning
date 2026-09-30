@@ -1,0 +1,26 @@
+.badge {
+  position: fixed;
+  right: 14px;
+  /* 移动端避开 Home 指示条 */
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: var(--z-badge);
+
+  /* 触摸目标：视觉上只有 12px 字号，但要保证手指点得到 */
+  padding: 6px 8px;
+  margin: -6px -8px;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  opacity: 0.5;
+  /* 压在渐变背景和深色面板上都要看得见 */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: opacity var(--dur) ease;
+}
+
+.badge:hover,
+.badge:active,
+.badge:focus-visible {
+  opacity: 1;
+}
