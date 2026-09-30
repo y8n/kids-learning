@@ -123,23 +123,43 @@ npm run ios:shot -- --current    # 截 PWA 全屏
 #### 判据一（首选）：`<dsh_im_source>` 来源块
 
 ```json
-<dsh_im_source>{"channel":"feishu","conversationType":"direct","senderId":"ou_…"}</dsh_im_source>
+<dsh_im_source>{"channel":"feishu","conversationType":"direct","senderId":"ou_b3e3…fd6e","chatId":"oc_e1fd…6a81","botId":"bot_1df6…0c3c"}</dsh_im_source>
 ```
 
 `channel` 随渠道变（`weixin` / `feishu` / `dingtalk` / `wecom` / `qq` / `slack`…），
 **只要出现这个块就说明来自 IM，不要再去匹配具体取值。**
 
+> 📌 **哪个字段出现是不确定的**：上面这行是飞书私聊的**实测**输出 ——
+> 当时勾了全部 9 个字段，实际只出来 5 个
+> （`senderName` / `conversationTitle` / `threadId` / `sentAt` 缺省，因为没有可用取值）。
+> **所以判据只能是「块存在」，不能依赖任何一个具体字段。**
+
 > ⚠️ **三条容易踩错**：
 >
 > 1. **来源块会先被拆分**：host 在 `agent/pre-step` 把它从用户消息里拆出来，
->    作为一条独立的 `notice` 上下文消息落在用户消息**旁边**。
+>    作为一条独立的**插件来源消息**（`source.kind: "plugin:dsh-im"`）落在用户消息**旁边**。
 >    所以用户消息正文永远是干净的、**翻会话历史也查不到** → 只能当场判
 >    （不是「被剥掉」，是「被拆走」——机制不同，结论一样）
+>
+>    实测日志（同一条飞书消息的三次落盘）：
+>
+>    | 记录                       | `source.kind`       | 正文                                                   |
+>    | -------------------------- | ------------------- | ------------------------------------------------------ |
+>    | `agent/inbox/spliced` 原始 | `user`              | `<dsh_im_source>{…}</dsh_im_source>\n\n打开了，测试 3` |
+>    | `user/message` 入库        | `user`              | `打开了，测试 3`                                       |
+>    | `user/message` 来源块      | **`plugin:dsh-im`** | `<dsh_im_source>{…}</dsh_im_source>`                   |
+>
 > 2. **它只在渠道的「上下文增强」开着时才产生**：
 >    `contextEnhancement.<botId>.direct.enabled` / `.group.enabled`，
 >    文件在 `~/.dsh/integrations/dsh-<渠道>/workspaces.json`。
 >    **关着 = 一条都不产生 = IM 消息全被误判成「桌面端」→ 该截图却不截。**
 >    （飞书 bot 的私聊增强曾长期是关的，就是这么踩的）
+>
+>    ⚠️ **改这个文件不够**：配置只在**进程启动时读一次**
+>    （`new WorkspaceStore(...).load()`，没有文件监听），
+>    直接改 JSON 不会生效，还会被下一次 UI 保存覆盖。
+>    **要么在 UI 里改，要么重启 DSH。**
+>
 > 3. **群聊和私聊是两个独立开关**，群聊关着时群消息照样没有来源块
 
 #### 判据二（兜底）：查 `rpcId` 前缀
