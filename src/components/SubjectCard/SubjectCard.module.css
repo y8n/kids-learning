@@ -101,8 +101,15 @@
   right: 2px;
   bottom: 0;
   z-index: var(--z-art);
-  width: calc(87% * var(--art-scale, 1));
-  height: 91%;
+  /* 用 cqw（= 卡片宽度的 1%）而不是 %：
+     设计稿的立绘容器是固定 202×236，对应卡片 256×258。
+     而 % 的解析基准取决于包含块，实测会落到卡片外框（256）而不是内边距盒（212），
+     一旦这里变了，宽度受限的角色（佩奇这种接近正方的）就会明显变大 —— 之前写成 87%
+     正是踩了这个坑，佩奇被放大到了 222.8px（+10.3%）。
+     cqw 的基准由 container-type 明确指定，不受包含块规则影响。
+     78.9cqw × 256 ≈ 202px，与设计稿一致。 */
+  width: calc(78.9cqw * var(--art-scale, 1));
+  height: 91.4%; /* 236 / 258 */
   object-fit: contain;
   object-position: bottom right;
   pointer-events: none;

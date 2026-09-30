@@ -54,8 +54,9 @@ const subjects: Subject[] = [
     characterUrl: pinkieUrl,
     theme: { from: '#8BE06A', to: '#3FA83C' },
     enabled: false,
-    // 碧琪宽高比 0.87（四张里最宽），不收缩会明显比其他角色大一圈
-    artScale: 0.76,
+    // 碧琪宽高比 0.87（四张里最宽），不收缩会明显比其他角色大一圈。
+    // 设计稿给她的立绘容器是 168px，基准 202px → 168/202 ≈ 0.831
+    artScale: 0.831,
     progress: progressOf('literacy'),
   },
 ]
